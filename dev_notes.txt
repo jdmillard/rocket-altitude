@@ -1,0 +1,43 @@
+f = ma
+-g -D = m * h_ddot
+D = 0.5 rho h_dot^2 CD
+CD = m*theta + b
+
+x1; h    ; h_dot = x2
+x2; h_dot; h_ddot = (formulas above dependent on params, h_dot and input, theta)
+using straight theta would require bandwidth separation fyi
+
+linearize, look into eq point
+close loop, aim for no overshoot, end sim when h_dot goes negative
+
+output of height?
+output of h_dot with schedule? where schedule is maxxed at beginning and comes down
+and zeros on the near-dragless trajectory on desired height?
+we could have a draggless map of h_d-h versus velocity
+we could augment it with a liberaldrag model for a perfect h versus h_dot to land there
+this way (solve diffeq for perfect schedule, think: integrate over the excess force),
+ the controller will always require some extra drag to stay on trajectory
+
+then use our controller to stay on that trajectory this could be built into controller perhaps?
+there is distribution on everything so montecarlo is the way to go to fine-tune this
+
+hdot |
+     |
+     | * * *
+     |_______
+          h
+first star is the dragless
+seconnd star is the +draggy
+thrid star is the desired; all 3 converge to zero at the desired height
+
+to approach this curve, we'll want to do system type identifiation to ensure
+it can track a ramp=like input - inportant or it will always overshoot
+
+also, we could apply the basic controller and h_dot slowdown to a gravity-less scenario to get time-constant
+
+also, you could do adaptive control over m and b parameters, if so, we could update the schedule (complicated)
+
+total engergy approach: turns out it's actually a similar concept because it would also require
+scheduling to anticipate the drag drain
+et = e_p + e_k
+ed =
