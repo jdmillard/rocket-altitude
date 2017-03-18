@@ -3,7 +3,7 @@ import numpy as np
 import pyqtgraph as pg
 import time
 
-class Plotter:
+class livePlotter:
     """
     Class for plotting methods.
     """
@@ -21,7 +21,7 @@ class Plotter:
             self.win = pg.GraphicsWindow(title="Live Plotting")
             self.win.resize(1500,500)    # set window size
             self.win.move(50,50)         # set window monitor position
-            self.win.setWindowTitle('PDAF + IMF')
+            self.win.setWindowTitle('Altitude Controller')
 
             # enable antialiasing for prettier plots
             pg.setConfigOptions(antialias=True)
@@ -32,11 +32,11 @@ class Plotter:
             pen_blue2 = pg.mkPen(color=(50, 50, 255, 255), width=1)
 
             # FIRST SUBPLOT OBJECT
-            self.p1 = self.win.addPlot(title="Scan 1 Measurements")
+            self.p1 = self.win.addPlot(title="Altitude vs. Time")
             self.p1.setXRange(0,final_time,padding=0)
-            self.p1.setYRange(0,40,padding=0)
-            self.p1.setLabel('left', "North")
-            self.p1.setLabel('bottom', "East") # , units='s'
+            self.p1.setYRange(1100,3048,padding=0)
+            self.p1.setLabel('left', "Altitude (m)")
+            self.p1.setLabel('bottom', "Time (s)") # , units='s'
             self.p1.showGrid(x=True, y=True)
             self.meas1 = self.p1.plot(pen=pen_blue, name='Traj')
             #self.meas1_fade =  self.p1.plot(pen=None, symbol='o', symbolPen=None, symbolSize=6, symbolBrush=(255, 255, 51, 30))
@@ -136,9 +136,6 @@ class Plotter:
             self.app.processEvents() #pg.QtGui.QApplication.processEvents()
 
             # hold plot on last iteration
-            print("---")
-            print(sim_time)
-            print(self.tf)
             if sim_time == self.tf:
                 print("desired simulation time: ", self.tf, ", time taken: ", current_time - self.time0)
                 self.app.exec_() # hold final plot

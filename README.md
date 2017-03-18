@@ -1,6 +1,6 @@
 ## 1D Python Rocket Simulation
 
-This is a basic 1-dimensional simulation, demonstrating the basic concept of altitude trajectory control.
+This is a basic 1-dimensional simulation, demonstrating the basic concept of altitude trajectory control. This simulation assumes the rocket flies perfectly vertical to satisfy the 1-dimensional constraint. Thus (with no wind) airspeed and vertical velocity are the same.
 
 Author: Jeffrey Millard
 
