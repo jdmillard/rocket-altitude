@@ -41,17 +41,18 @@ class livePlotter:
             self.meas1 = self.p1.plot(pen=pen_blue, name='Traj')
             #self.meas1_fade =  self.p1.plot(pen=None, symbol='o', symbolPen=None, symbolSize=6, symbolBrush=(255, 255, 51, 30))
 
-            '''
             # SECOND SUBPLOT OBJECT
-            self.p2 = self.win.addPlot(title="Scan 2 Measurements")
-            self.p2.setXRange(-11,11,padding=0)
-            self.p2.setYRange(-11,11,padding=0)
-            #self.p2.setLabel('left', "Y Axis", units='A')
-            self.p2.setLabel('bottom', "East")
+            self.p2 = self.win.addPlot(title="h_dot vs. h")
+            self.p2.setXRange(1100,3048,padding=0)
+            self.p2.setYRange(0,320,padding=0)
+            self.p2.setLabel('left', "h_dot (m/s)")
+            self.p2.setLabel('bottom', "h (m)")
             self.p2.showGrid(x=True, y=True)
-            self.meas2 = self.p2.plot(pen=None, symbol='o', symbolPen=None, symbolSize=3, symbolBrush=(255, 100, 0, 150))
-            self.meas2_fade =  self.p2.plot(pen=None, symbol='o', symbolPen=None, symbolSize=6, symbolBrush=(255, 100, 0, 30))
+            self.meas2 = self.p2.plot(pen=pen_blue, name='Traj2')
+            #self.meas2 = self.p2.plot(pen=None, symbol='o', symbolPen=None, symbolSize=3, symbolBrush=(255, 100, 0, 150))
+            #self.meas2_fade =  self.p2.plot(pen=None, symbol='o', symbolPen=None, symbolSize=6, symbolBrush=(255, 100, 0, 30))
 
+            '''
             # THIRD SUBPLOT OBJECT
             self.p3 = self.win.addPlot(title="Tracks")
             self.p3.setXRange(-11,11,padding=0)
@@ -81,7 +82,7 @@ class livePlotter:
 
 
     # method for updating data
-    def updateItems(self, h, t, sim_time, current_time):
+    def updateItems(self, rocket, t, sim_time, current_time):
         if self.plot_real_time:
             # plot no faster than actual time
             actual_time = current_time - self.time0
@@ -91,8 +92,12 @@ class livePlotter:
 
             # get most recent measurement from sensor 1
             x = t;
-            y = h
+            y = rocket.h_all
             self.meas1.setData(x,y)
+
+            x = rocket.h_all
+            y = rocket.hd_all
+            self.meas2.setData(x,y)
 
             #x = pda.sensor_list[0].meas_list[:,0]
             #y = pda.sensor_list[0].meas_list[:,1]

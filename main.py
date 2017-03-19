@@ -5,9 +5,7 @@ from plotter import livePlotter
 from rocket import rocketClass
 
 
-# initialize history vectosr for altitude, velocity, and time
-h_list = np.array([])
-hd_list = np.array([])
+# initialize history vector for time
 t_list = np.array([])
 
 # set dt, start, end, and create array of all times
@@ -23,16 +21,11 @@ rocket = rocketClass()
 # perform simulation
 for t in times:
 
-    rocket.propagateStates(dt, 0)
-
-    h = rocket.h
-    hd = rocket.hd
-
-    h_list  = np.append(h_list, np.array(h))
-    hd_list = np.append(h_list, np.array(h))
     t_list  = np.append(t_list, np.array(t))
 
-    plotter.updateItems(h_list, t_list, t, time.time())
+    rocket.propagateStates(dt, 0)
+
+    plotter.updateItems(rocket, t_list, t, time.time())
 
 
 

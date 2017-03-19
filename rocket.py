@@ -27,8 +27,12 @@ class rocketClass:
         self.A      = 0.03      # m^2       (reference area)                    FIX FIX FIX
 
         # initialize current states
-        self.h   = self.h_0
-        self.hd  = self.hd_0
+        self.h      = self.h_0
+        self.hd     = self.hd_0
+
+        # initialize history vectors
+        self.h_all  = np.array([])
+        self.hd_all = np.array([])
 
 
     def propagateStates(self, dt, theta):
@@ -53,3 +57,8 @@ class rocketClass:
         # could be improved with numerical method
         self.hd = self.hd + dt*hdd
         self.h  = self.h  + dt*self.hd
+
+
+        # note, the append gets slow, figure out good increment system and preallocate
+        self.h_all  = np.append(self.h_all, np.array(self.h))
+        self.hd_all = np.append(self.hd_all, np.array(self.hd))
