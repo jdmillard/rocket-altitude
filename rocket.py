@@ -20,10 +20,11 @@ class rocketClass:
         self.T_0    = 294.261   # K         (70degF in Kelvin)                  NOTE: could use formula for this to vary temp
         self.alpha  = 0.0065    # K/m       (low altitude temperature rate)
         self.n      = 5.2561    # unitless  (gas constant)
-        self.m      = 20.5      # kg        (post-burn aircraft mass)           FIX FIX FIX
+        self.m      = 20.5      # kg        (post-burn aircraft mass)           REFINE
 
-        self.CD_b   = 0.1       # unitless  (drag base coefficient)             FIX FIX FIX (openRocket says 0.6)
-        self.CD_s   = 0.01      # unitless  (drag slope CD/angle rate)          FIX FIX FIX (assumes linear relationship)
+        self.CD_b   = 0.6       # unitless  (drag base coefficient)             REFINE
+        self.CD_s   = 0.02      # unitless  (drag slope CD/angle rate)          FIX FIX FIX (assumes linear relationship)
+        self.A      = 0.03      # m^2       (reference area)                    FIX FIX FIX
 
         # initialize current states
         self.h   = self.h_0
@@ -41,14 +42,14 @@ class rocketClass:
 
         CD      = self.CD_b + self.CD_s*theta;
 
-        h_diff  = self.h - self.h_0
+        h_diff  = max(self.h - self.h_0, 0)
         ratio   = (self.T_0 - self.alpha*h_diff)/self.T_0
         rho     = self.rho_0 * ratio**(self.n-1)
-        #check density, & check units too
 
-        drag    = 0.5*rho*(self.hd**2)*CD
-        hdd     = -(self.g*self.m + drag)/self.m
+        drag    = 0.5*rho*(self.hd**2)*CD*self.A
+        hdd     = -self.g - (drag/self.m)*np.sign(self.hd)
 
         # update the states with crude foward difference
+        # could be improved with numerical method
         self.hd = self.hd + dt*hdd
         self.h  = self.h  + dt*self.hd
