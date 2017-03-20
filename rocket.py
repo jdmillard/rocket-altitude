@@ -54,7 +54,7 @@ class rocketClass:
 
         CD      = self.CD_b + self.CD_s*theta;
 
-        h_diff  = max(self.h - self.h_0, 0)
+        h_diff  = self.h - self.h_0
         ratio   = (self.T_0 - self.alpha*h_diff)/self.T_0
         rho     = self.rho_0 * ratio**(self.n-1)
 

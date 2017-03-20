@@ -41,16 +41,29 @@ class livePlotter:
             self.meas1 = self.p1.plot(pen=pen_blue, name='Traj')
             #self.meas1_fade =  self.p1.plot(pen=None, symbol='o', symbolPen=None, symbolSize=6, symbolBrush=(255, 255, 51, 30))
 
+
             # SECOND SUBPLOT OBJECT
-            self.p2 = self.win.addPlot(title="h_dot vs. h")
-            self.p2.setXRange(1100,3048,padding=0)
+            self.p2 = self.win.addPlot(title="Velocity vs. Time")
+            self.p2.setXRange(0,final_time,padding=0)
             self.p2.setYRange(0,320,padding=0)
             self.p2.setLabel('left', "h_dot (m/s)")
-            self.p2.setLabel('bottom', "h (m)")
+            self.p2.setLabel('bottom', "Time (s)")
             self.p2.showGrid(x=True, y=True)
             self.meas2 = self.p2.plot(pen=pen_blue, name='Traj2')
             #self.meas2 = self.p2.plot(pen=None, symbol='o', symbolPen=None, symbolSize=3, symbolBrush=(255, 100, 0, 150))
             #self.meas2_fade =  self.p2.plot(pen=None, symbol='o', symbolPen=None, symbolSize=6, symbolBrush=(255, 100, 0, 30))
+
+
+            # THIRD SUBPLOT OBJECT
+            self.p3 = self.win.addPlot(title="h_dot vs. h")
+            self.p3.setXRange(1100,3048,padding=0)
+            self.p3.setYRange(0,320,padding=0)
+            self.p3.setLabel('left', "h_dot (m/s)")
+            self.p3.setLabel('bottom', "h (m)")
+            self.p3.showGrid(x=True, y=True)
+            self.meas3 = self.p3.plot(pen=pen_blue, name='Traj2')
+            #self.meas3 = self.p3.plot(pen=None, symbol='o', symbolPen=None, symbolSize=3, symbolBrush=(255, 100, 0, 150))
+            #self.meas3_fade =  self.p3.plot(pen=None, symbol='o', symbolPen=None, symbolSize=6, symbolBrush=(255, 100, 0, 30))
 
             '''
             # THIRD SUBPLOT OBJECT
@@ -95,10 +108,15 @@ class livePlotter:
             y = rocket.h_all[0:rocket.i]
             self.meas1.setData(x,y)
 
-            # get h and h_dot for the rocket
-            x = rocket.h_all[0:rocket.i]
+            # get time and h_dot for the rocket
+            #x = rocket.t_all[0:rocket.i]
             y = rocket.hd_all[0:rocket.i]
             self.meas2.setData(x,y)
+
+            # get h and h_dot for the rocket
+            x = rocket.h_all[0:rocket.i]
+            #y = rocket.hd_all[0:rocket.i]
+            self.meas3.setData(x,y)
 
             #x = pda.sensor_list[0].meas_list[:,0]
             #y = pda.sensor_list[0].meas_list[:,1]
@@ -141,13 +159,16 @@ class livePlotter:
             # update the plotted data
             self.app.processEvents() #pg.QtGui.QApplication.processEvents()
 
-            # hold plot on last iteration
-            print('---')
-            print(sim_time)
-            print(self.tf)
-            if int(sim_time) == self.tf:
-                print("desired simulation time: ", self.tf, ", time taken: ", current_time - self.time0)
-                self.app.exec_() # hold final plot
+            # hold plot when rocket reaches maximum height
+            if rocket.hd <= 0:
+                print("simulation finished")
+                print("rocket altitude:", rocket.h, "m")
+                print("simulation time:", sim_time, "s")
+                #print("real time: ", current_time - self.time0, " s")
+                while 1:
+                    time.sleep(5)
+                    self.app.processEvents() #pg.QtGui.QApplication.processEvents()
+                    #self.app.exec_() # hold final plot
 
     # method for generating 2d ellipse for a given covariance
     def generateEllipse(self, P):

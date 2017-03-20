@@ -1,8 +1,23 @@
+# import core libraries
 import numpy as np
 import time
 
+# import custom classes
 from plotter import livePlotter
 from rocket import rocketClass
+
+# import signal handler (for clean ctrl+C exiting)
+import signal
+import sys
+
+# define operations during shutdown
+def signal_handler(signal, frame):
+    print('\nterminating simulation')
+    sys.exit(0)
+
+# setup signal handler specifying callback function
+signal.signal(signal.SIGINT, signal_handler)
+
 
 
 # set dt, start, end, and create array of all times
