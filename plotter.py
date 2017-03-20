@@ -38,9 +38,7 @@ class livePlotter:
             self.p1.setLabel('left', "Altitude (m)")
             self.p1.setLabel('bottom', "Time (s)") # , units='s'
             self.p1.showGrid(x=True, y=True)
-            self.meas1 = self.p1.plot(pen=pen_blue, name='Traj')
-            #self.meas1_fade =  self.p1.plot(pen=None, symbol='o', symbolPen=None, symbolSize=6, symbolBrush=(255, 255, 51, 30))
-
+            self.meas1 = self.p1.plot(pen=pen_blue, name='Curve 1')
 
             # SECOND SUBPLOT OBJECT
             self.p2 = self.win.addPlot(title="Velocity vs. Time")
@@ -49,10 +47,7 @@ class livePlotter:
             self.p2.setLabel('left', "h_dot (m/s)")
             self.p2.setLabel('bottom', "Time (s)")
             self.p2.showGrid(x=True, y=True)
-            self.meas2 = self.p2.plot(pen=pen_blue, name='Traj2')
-            #self.meas2 = self.p2.plot(pen=None, symbol='o', symbolPen=None, symbolSize=3, symbolBrush=(255, 100, 0, 150))
-            #self.meas2_fade =  self.p2.plot(pen=None, symbol='o', symbolPen=None, symbolSize=6, symbolBrush=(255, 100, 0, 30))
-
+            self.meas2 = self.p2.plot(pen=pen_blue, name='Curve 2')
 
             # THIRD SUBPLOT OBJECT
             self.p3 = self.win.addPlot(title="h_dot vs. h")
@@ -61,28 +56,7 @@ class livePlotter:
             self.p3.setLabel('left', "h_dot (m/s)")
             self.p3.setLabel('bottom', "h (m)")
             self.p3.showGrid(x=True, y=True)
-            self.meas3 = self.p3.plot(pen=pen_blue, name='Traj2')
-            #self.meas3 = self.p3.plot(pen=None, symbol='o', symbolPen=None, symbolSize=3, symbolBrush=(255, 100, 0, 150))
-            #self.meas3_fade =  self.p3.plot(pen=None, symbol='o', symbolPen=None, symbolSize=6, symbolBrush=(255, 100, 0, 30))
-
-            '''
-            # THIRD SUBPLOT OBJECT
-            self.p3 = self.win.addPlot(title="Tracks")
-            self.p3.setXRange(-11,11,padding=0)
-            self.p3.setYRange(-11,11,padding=0)
-            #self.p3.setLabel('left', "Y Axis", units='A')
-            self.p3.setLabel('bottom', "East")
-            self.p3.showGrid(x=True, y=True)
-            # add a legend to subplot, note: you could add handle, then use
-            # .addItem, but using name='' in plot objects adds them for you
-            self.p3.addLegend()
-            # plot the truth trajectory (no data specified yet)
-            # the handle will be used with .setData(,) to update live
-            self.truth = self.p3.plot(pen=pen_green, name='Truth')
-            self.estim = self.p3.plot(pen=pen_blue, name='Estimate')
-            self.ellip = self.p3.plot(pen=pen_blue2)
-            '''
-
+            self.meas3 = self.p3.plot(pen=pen_blue, name='Curve 3')
 
             # show the plot by calling an update
             # it is needed twice (to force display on first iteration) - not sure why
@@ -103,58 +77,22 @@ class livePlotter:
                 # pause to wait for actual time to catch up
                 time.sleep(sim_time-actual_time)
 
+
             # get time and h for the rocket
             x = rocket.t_all[0:rocket.i]
             y = rocket.h_all[0:rocket.i]
             self.meas1.setData(x,y)
 
             # get time and h_dot for the rocket
-            #x = rocket.t_all[0:rocket.i]
+            #x = rocket.t_all[0:rocket.i] # x is already this
             y = rocket.hd_all[0:rocket.i]
             self.meas2.setData(x,y)
 
             # get h and h_dot for the rocket
             x = rocket.h_all[0:rocket.i]
-            #y = rocket.hd_all[0:rocket.i]
+            #y = rocket.hd_all[0:rocket.i] # y is already this
             self.meas3.setData(x,y)
 
-            #x = pda.sensor_list[0].meas_list[:,0]
-            #y = pda.sensor_list[0].meas_list[:,1]
-            #self.meas1_fade.setData(x,y)
-
-            '''
-            # get most recent measurement from sensor 2
-            x = pda.sensor_list[1].meas[:,0]
-            y = pda.sensor_list[1].meas[:,1]
-            self.meas2.setData(x,y)
-            x = pda.sensor_list[1].meas_list[:,0]
-            y = pda.sensor_list[1].meas_list[:,1]
-            self.meas2_fade.setData(x,y)
-
-            # pull out east and north elements
-            x = agents.state_list[:,1]
-            y = agents.state_list[:,0]
-            self.truth.setData(x,y)
-            x = pda.x_hat_list[:,0]
-            y = pda.x_hat_list[:,1]
-            self.estim.setData(x, y)
-
-            # get first two states and corresponding covariance
-            in1 = pda.x_hat[0:2,:]
-            in2 = pda.P[0:2,0:2]
-
-            increment = 0.1
-            phi = np.arange(0, 2*np.pi+increment, increment)
-            aa = np.atleast_2d(np.cos(phi))
-            bb = np.atleast_2d(np.sin(phi))
-            pts = np.concatenate((aa,bb))
-
-            U = np.linalg.cholesky(in2)
-            sigma = 3
-
-            pts = sigma*np.matmul(np.transpose(U),pts) + np.tile(in1, len(phi))
-            self.ellip.setData(pts[0,:],pts[1,:])
-            '''
 
             # update the plotted data
             self.app.processEvents() #pg.QtGui.QApplication.processEvents()

@@ -1,7 +1,5 @@
 import numpy as np
 
-# this early in the repo history, this is all artifacts of what I pasted
-# from another project
 
 class rocketClass:
     """
@@ -31,7 +29,6 @@ class rocketClass:
         self.hd     = self.hd_0
 
         # initialize history vectors
-        #big_array = np.zeros(times.size)
         self.h_all  = np.empty(times.size+1)
         self.hd_all = np.empty(times.size+1)
         self.t_all  = np.empty(times.size+1)
@@ -40,7 +37,6 @@ class rocketClass:
         self.hd_all[0] = self.hd
         self.t_all[0] = 0
         self.i = 1 # index for next iteration
-
 
 
     def propagateStates(self, dt, theta):
@@ -67,9 +63,9 @@ class rocketClass:
         self.h  = self.h  + dt*self.hd
 
         # update the history vectors
-        self.h_all[self.i] = self.h
+        self.h_all[self.i]  = self.h
         self.hd_all[self.i] = self.hd
-        self.t_all[self.i] = self.t_all[self.i-1]+dt
+        self.t_all[self.i]  = self.t_all[self.i-1]+dt
 
         # increment index
         self.i = self.i + 1
