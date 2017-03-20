@@ -82,7 +82,7 @@ class livePlotter:
 
 
     # method for updating data
-    def updateItems(self, rocket, t, sim_time, current_time):
+    def updateItems(self, rocket, sim_time, current_time):
         if self.plot_real_time:
             # plot no faster than actual time
             actual_time = current_time - self.time0
@@ -90,13 +90,14 @@ class livePlotter:
                 # pause to wait for actual time to catch up
                 time.sleep(sim_time-actual_time)
 
-            # get most recent measurement from sensor 1
-            x = t;
-            y = rocket.h_all
+            # get time and h for the rocket
+            x = rocket.t_all[0:rocket.i]
+            y = rocket.h_all[0:rocket.i]
             self.meas1.setData(x,y)
 
-            x = rocket.h_all
-            y = rocket.hd_all
+            # get h and h_dot for the rocket
+            x = rocket.h_all[0:rocket.i]
+            y = rocket.hd_all[0:rocket.i]
             self.meas2.setData(x,y)
 
             #x = pda.sensor_list[0].meas_list[:,0]
@@ -141,7 +142,10 @@ class livePlotter:
             self.app.processEvents() #pg.QtGui.QApplication.processEvents()
 
             # hold plot on last iteration
-            if sim_time == self.tf:
+            print('---')
+            print(sim_time)
+            print(self.tf)
+            if int(sim_time) == self.tf:
                 print("desired simulation time: ", self.tf, ", time taken: ", current_time - self.time0)
                 self.app.exec_() # hold final plot
 

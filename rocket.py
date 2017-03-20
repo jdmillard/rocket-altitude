@@ -8,7 +8,7 @@ class rocketClass:
     This the the rocket class. It contains all the relevant parameters and
     functions to simulate dynamics and observation.
     """
-    def __init__(self):
+    def __init__(self, times):
         # this is the constructor
 
         # establish constants (see notes to make sense of these)
@@ -31,8 +31,16 @@ class rocketClass:
         self.hd     = self.hd_0
 
         # initialize history vectors
-        self.h_all  = np.array([])
-        self.hd_all = np.array([])
+        #big_array = np.zeros(times.size)
+        self.h_all  = np.empty(times.size+1)
+        self.hd_all = np.empty(times.size+1)
+        self.t_all  = np.empty(times.size+1)
+
+        self.h_all[0] = self.h
+        self.hd_all[0] = self.hd
+        self.t_all[0] = 0
+        self.i = 1 # index for next iteration
+
 
 
     def propagateStates(self, dt, theta):
@@ -58,7 +66,10 @@ class rocketClass:
         self.hd = self.hd + dt*hdd
         self.h  = self.h  + dt*self.hd
 
+        # update the history vectors
+        self.h_all[self.i] = self.h
+        self.hd_all[self.i] = self.hd
+        self.t_all[self.i] = self.t_all[self.i-1]+dt
 
-        # note, the append gets slow, figure out good increment system and preallocate
-        self.h_all  = np.append(self.h_all, np.array(self.h))
-        self.hd_all = np.append(self.hd_all, np.array(self.hd))
+        # increment index
+        self.i = self.i + 1
