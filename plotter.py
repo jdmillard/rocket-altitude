@@ -19,7 +19,7 @@ class livePlotter:
 
             # create the widget ("Graphics Window" allows stacked plots)
             self.win = pg.GraphicsWindow(title="Live Plotting")
-            self.win.resize(1500,500)    # set window size
+            self.win.resize(1500,1000)    # set window size
             self.win.move(50,50)         # set window monitor position
             self.win.setWindowTitle('Altitude Controller')
 
@@ -58,6 +58,17 @@ class livePlotter:
             self.p3.showGrid(x=True, y=True)
             self.meas3 = self.p3.plot(pen=pen_blue, name='Curve 3')
 
+            self.win.nextRow()
+
+            # FOURTH SUBPLOT OBJECT
+            self.p4 = self.win.addPlot(title="Experimental")
+            self.p4.setXRange(0,final_time,padding=0)
+            self.p4.setYRange(1100,3048,padding=0)
+            self.p4.setLabel('left', "Altitude (m)")
+            self.p4.setLabel('bottom', "Time (s)")
+            self.p4.showGrid(x=True, y=True)
+            self.meas4 = self.p4.plot(pen=pen_green, name='Curve 4')
+
             # show the plot by calling an update
             # it is needed twice (to force display on first iteration) - not sure why
             # either method below works, but the app handle method is better practice
@@ -72,6 +83,7 @@ class livePlotter:
     def updateItems(self, rocket, sim_time, current_time):
         if self.plot_real_time:
             # plot no faster than actual time
+            # NOTE: simulation can get slower than real time
             actual_time = current_time - self.time0
             if actual_time < sim_time:
                 # pause to wait for actual time to catch up
@@ -82,6 +94,7 @@ class livePlotter:
             x = rocket.t_all[0:rocket.i]
             y = rocket.h_all[0:rocket.i]
             self.meas1.setData(x,y)
+            self.meas4.setData(x,y)
 
             # get time and h_dot for the rocket
             #x = rocket.t_all[0:rocket.i] # x is already this

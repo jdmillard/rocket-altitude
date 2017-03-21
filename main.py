@@ -19,6 +19,12 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 
+'''
+This is main.py which initializes the important objects and governs the timing
+of each simulation piece.
+
+'''
+
 
 # set dt, start, end, and create array of all times
 dt = 0.01

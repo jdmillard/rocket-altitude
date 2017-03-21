@@ -11,8 +11,9 @@ class rocketClass:
 
         # establish constants (see notes to make sense of these)
         # when structured for monte carlo, many of these will be sampled
+        # best to consider these beyond our control
         self.g      = 9.81      # m/s^2     (earth's gravity)
-        self.h_0    = 1188.72   # m         (3900ft, altitude of Las Cruces, NM)
+        self.h_0    = 1188.72   # m         (3900ft, Las Cruces, NM)            NOTE: we need to take into account the amount of altitude gain during burn
         self.hd_0   = 296       # m/s       (post-burn velocity)                REFINE
         self.rho_0  = 1.036     # kg/m^3    (for 3900ft, 70degF, 15% humidity)  NOTE: could search for a formula for this to be able to vary temp, humidity, etc
         self.T_0    = 294.261   # K         (70degF in Kelvin)                  NOTE: could use formula for this to vary temp
@@ -33,10 +34,10 @@ class rocketClass:
         self.hd_all = np.empty(times.size+1)
         self.t_all  = np.empty(times.size+1)
 
-        self.h_all[0] = self.h
-        self.hd_all[0] = self.hd
-        self.t_all[0] = 0
-        self.i = 1 # index for next iteration
+        self.h_all[0]   = self.h
+        self.hd_all[0]  = self.hd
+        self.t_all[0]   = 0
+        self.i          = 1 # index for next iteration
 
 
     def propagateStates(self, dt, theta):
