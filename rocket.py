@@ -70,3 +70,16 @@ class rocketClass:
 
         # increment index
         self.i = self.i + 1
+
+
+# we need to create a class method to genereate a reference trajectory for a
+# given (larger) drag value. this trajectory would need to be a recursive
+# finding algorithm such that it arrives at the desired altitue perfectly
+# we can't just generate and shift down... then we'll know the needed h_dot
+# for any
+
+# then create plots of the error:
+# (h_dot_cur - h_dot_ref) vs h
+# (h_dot_cur - h_dot_ref) vs t
+
+# this builds the framework for an error value we can drive to zero using PID
