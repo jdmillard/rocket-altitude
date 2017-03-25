@@ -41,3 +41,10 @@ total engergy approach: turns out it's actually a similar concept because it wou
 scheduling to anticipate the drag drain
 et = e_p + e_k
 ed =
+
+
+NOTES 3/25/2017:
+JM: the reference trajectory is now generated from sea level, this gives us the
+desired hd for any h. now I'd like to create a plot of the error between the
+current trajectory and the reference trajectory over time. This will require
+some interpolation from the reference trajectory since it's not a 1-1 mapping

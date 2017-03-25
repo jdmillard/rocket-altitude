@@ -96,8 +96,8 @@ class rocketClass:
             # reset h, hd, and their histories
             h       = 0
             hd      = hd_0_ref
-            h_ref   = np.empty([0])
-            hd_ref  = np.empty([0])
+            h_ref   = np.array([h])
+            hd_ref  = np.array([hd])
 
             # run the trajectory with the current parameters
             while hd > 0:
