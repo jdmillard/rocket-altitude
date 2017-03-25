@@ -34,7 +34,7 @@ class livePlotter:
             # FIRST SUBPLOT OBJECT
             self.p1 = self.win.addPlot(title="Altitude vs. Time")
             self.p1.setXRange(0,final_time,padding=0)
-            self.p1.setYRange(1100,3048,padding=0)
+            self.p1.setYRange(1100,3200,padding=0)
             self.p1.setLabel('left', "Altitude (m)")
             self.p1.setLabel('bottom', "Time (s)") # , units='s'
             self.p1.showGrid(x=True, y=True)
@@ -117,9 +117,9 @@ class livePlotter:
                 print("simulation time:", sim_time, "s")
                 #print("real time: ", current_time - self.time0, " s")
                 while 1:
-                    time.sleep(5)
                     self.app.processEvents() #pg.QtGui.QApplication.processEvents()
-                    #self.app.exec_() # hold final plot
+                    self.app.exec_() # hold final plot
+                    #time.sleep(5)
 
     # method for generating 2d ellipse for a given covariance
     def generateEllipse(self, P):

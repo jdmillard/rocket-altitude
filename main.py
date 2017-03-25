@@ -3,8 +3,8 @@ import numpy as np
 import time
 
 # import custom classes
-from plotter import livePlotter
 from rocket import rocketClass
+from plotter import livePlotter
 
 # import signal handler (for clean ctrl+C exiting)
 import signal
@@ -33,8 +33,8 @@ final_time = 20
 times = np.arange(start_time+dt,final_time+dt,dt)
 
 # instantiate plotter and rocket classes
+rocket  = rocketClass(times)
 plotter = livePlotter(final_time=final_time, plot_real_time=True)
-rocket = rocketClass(times)
 
 # perform simulation
 for t in times:
