@@ -7,7 +7,7 @@ class livePlotter:
     """
     Class for plotting methods.
     """
-    def __init__(self, final_time, plot_real_time):
+    def __init__(self, rocket, final_time, plot_real_time):
         # store some inputs
         self.plot_real_time = plot_real_time
         self.tf = final_time
@@ -20,21 +20,22 @@ class livePlotter:
             # create the widget ("Graphics Window" allows stacked plots)
             self.win = pg.GraphicsWindow(title="Live Plotting")
             self.win.resize(1500,1000)    # set window size
-            self.win.move(50,50)         # set window monitor position
-            self.win.setWindowTitle('Altitude Controller')
+            self.win.move(50,50)          # set window monitor position
+            self.win.setWindowTitle('Altitude Controller Truth')
 
             # enable antialiasing for prettier plots
             pg.setConfigOptions(antialias=True)
 
             # set some pen types
-            pen_green = pg.mkPen(color=(50, 255, 50, 255), width=4)
-            pen_blue = pg.mkPen(color=(50, 50, 255, 255), width=2, symbol='t')
-            pen_blue2 = pg.mkPen(color=(50, 50, 255, 255), width=1)
+            pen_green  = pg.mkPen(color=(50, 255, 50, 255), width=4)
+            pen_green2 = pg.mkPen(color=(50, 255, 50, 255), width=1)
+            pen_blue   = pg.mkPen(color=(50, 50, 255, 255), width=2, symbol='t')
+            pen_blue2  = pg.mkPen(color=(50, 50, 255, 255), width=1)
 
             # FIRST SUBPLOT OBJECT
             self.p1 = self.win.addPlot(title="Altitude vs. Time")
             self.p1.setXRange(0,final_time,padding=0)
-            self.p1.setYRange(1100,3200,padding=0)
+            self.p1.setYRange(1100,3300,padding=0)
             self.p1.setLabel('left', "Altitude (m)")
             self.p1.setLabel('bottom', "Time (s)") # , units='s'
             self.p1.showGrid(x=True, y=True)
@@ -51,23 +52,44 @@ class livePlotter:
 
             # THIRD SUBPLOT OBJECT
             self.p3 = self.win.addPlot(title="h_dot vs. h")
-            self.p3.setXRange(1100,3048,padding=0)
+            self.p3.setXRange(1100,3300,padding=0)
             self.p3.setYRange(0,320,padding=0)
             self.p3.setLabel('left', "h_dot (m/s)")
             self.p3.setLabel('bottom', "h (m)")
             self.p3.showGrid(x=True, y=True)
-            self.meas3 = self.p3.plot(pen=pen_blue, name='Curve 3')
+            self.p3.addLegend(offset=[-10,10])
+            self.meas3 = self.p3.plot(pen=pen_blue, name='Simulated Trajectory')
+            self.t_ref = self.p3.plot(pen=pen_green2, name='Reference Trajectory')
+            self.t_ref.setData(rocket.h_ref, rocket.hd_ref)
 
             self.win.nextRow()
 
             # FOURTH SUBPLOT OBJECT
-            self.p4 = self.win.addPlot(title="Experimental")
+            self.p4 = self.win.addPlot(title="EXPERIMENTAL")
             self.p4.setXRange(0,final_time,padding=0)
-            self.p4.setYRange(1100,3048,padding=0)
+            self.p4.setYRange(1100,3300,padding=0)
             self.p4.setLabel('left', "Altitude (m)")
             self.p4.setLabel('bottom', "Time (s)")
             self.p4.showGrid(x=True, y=True)
             self.meas4 = self.p4.plot(pen=pen_green, name='Curve 4')
+
+            # FIFTH SUBPLOT OBJECT
+            self.p5 = self.win.addPlot(title="EXPERIMENTAL")
+            self.p5.setXRange(0,final_time,padding=0)
+            self.p5.setYRange(1100,3300,padding=0)
+            self.p5.setLabel('left', "Altitude (m)")
+            self.p5.setLabel('bottom', "Time (s)")
+            self.p5.showGrid(x=True, y=True)
+            self.meas5 = self.p5.plot(pen=pen_green, name='Curve 5')
+
+            # SIXTH SUBPLOT OBJECT
+            self.p6 = self.win.addPlot(title="Reference Error")
+            self.p6.setXRange(0,final_time,padding=0)
+            self.p6.setYRange(1100,3300,padding=0)
+            self.p6.setLabel('left', "Altitude (m)")
+            self.p6.setLabel('bottom', "Time (s)")
+            self.p6.showGrid(x=True, y=True)
+            self.meas6 = self.p6.plot(pen=pen_green, name='Curve 6')
 
             # show the plot by calling an update
             # it is needed twice (to force display on first iteration) - not sure why

@@ -76,6 +76,7 @@ class rocketClass:
         # increment index
         self.i = self.i + 1
 
+
     def refTrajectory(self, CD_ref):
         # use pessimistic parameters to define a reference trajectory (hd vs h)
         # this is done starting from sea level in order to be more complete
