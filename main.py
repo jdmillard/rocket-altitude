@@ -5,6 +5,7 @@ import time
 # import custom classes
 from rocket import rocketClass
 from plotter import livePlotter
+from lcm import lcm_mult as lcm
 
 # import signal handler (for clean ctrl+C exiting)
 import signal
@@ -25,6 +26,13 @@ of each simulation piece.
 
 '''
 
+# set the rates of each piece of simulation
+hz_sim = 100    # (Hz) sim rate
+hz_fil = 50     # (Hz) filter and control rate
+hz_plt = 60     # (Hz) plot rate
+
+# get the rate that represents the least common multiple
+hz_lcm = lcm([hz_sim, hz_fil, hz_plt])
 
 # set dt, start, end, and create array of all times
 dt = 0.01
