@@ -48,7 +48,11 @@ class rocketClass:
 
     def propagateStates(self, dt, theta):
         # propagate full nonlinear equations of motion
-        # NOTE: try runge-kutta continuous time to minimize numerical error
+
+        # NOTE: This uses "Euler's First-Order Forward Method" which is the
+        # numerical integration equivalent of the forward difference formula.
+        # We can look into a more sophisticated approach such as Runge-Kutta.
+        # Matlab's "ode45" does Runge-Kutta with 4th and 5th order pair.
 
         # use states, inputs, and constants to find the derivatives of states
         # first find the drag coefficient based on the current angle theta
@@ -64,8 +68,7 @@ class rocketClass:
         drag    = 0.5*rho*(self.hd**2)*CD*self.A
         hdd     = -self.g - (drag/self.m)*np.sign(self.hd)
 
-        # update the states with crude foward difference
-        # could be improved with numerical method
+        # update the states
         self.h  = self.h  + dt*self.hd
         self.hd = self.hd + dt*hdd
 
