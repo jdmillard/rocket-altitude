@@ -31,9 +31,10 @@ class rocketClass:
         self.hd     = self.hd_0
 
         # initialize history vectors
-        self.h_all  = np.empty(times.size+1)
-        self.hd_all = np.empty(times.size+1)
-        self.t_all  = np.empty(times.size+1)
+        self.h_all  = np.empty(times.size+1)    # history of h      (height)
+        self.hd_all = np.empty(times.size+1)    # history of h_dot  (velocity)
+        self.t_all  = np.empty(times.size+1)    # history of time
+        self.e_hd   = np.empty(times.size+1)    # history of reference error
 
         self.h_all[0]   = self.h
         self.hd_all[0]  = self.hd
@@ -65,13 +66,17 @@ class rocketClass:
 
         # update the states with crude foward difference
         # could be improved with numerical method
-        self.hd = self.hd + dt*hdd
         self.h  = self.h  + dt*self.hd
+        self.hd = self.hd + dt*hdd
 
         # update the history vectors
         self.h_all[self.i]  = self.h
         self.hd_all[self.i] = self.hd
         self.t_all[self.i]  = self.t_all[self.i-1]+dt
+
+        # interpolate the current hd_ref and compare to reference trajectory
+        self.hd_cmd         = np.interp(self.h, self.h_ref, self.hd_ref)
+        self.e_hd[self.i]   = self.hd - self.hd_cmd
 
         # increment index
         self.i = self.i + 1
@@ -112,8 +117,8 @@ class rocketClass:
 
                 # update the states with crude foward difference
                 # could be improved with numerical method
-                hd = hd + dt*hdd
                 h  = h  + dt*hd
+                hd = hd + dt*hdd
 
                 # update the history vectors
                 # the if check is to avoid writing early, saving time
@@ -128,3 +133,7 @@ class rocketClass:
         # save the final reference trajectory as a class member
         self.h_ref  = h_ref
         self.hd_ref = hd_ref
+
+        # generate a starting hd_cmd and the first error history
+        self.hd_cmd     = np.interp(self.h, self.h_ref, self.hd_ref)
+        self.e_hd[0]    = self.hd - self.hd_cmd

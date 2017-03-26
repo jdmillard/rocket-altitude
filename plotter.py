@@ -27,7 +27,7 @@ class livePlotter:
             pg.setConfigOptions(antialias=True)
 
             # set some pen types
-            pen_green  = pg.mkPen(color=(50, 255, 50, 255), width=4)
+            pen_green  = pg.mkPen(color=(50, 255, 50, 255), width=2)
             pen_green2 = pg.mkPen(color=(50, 255, 50, 255), width=1)
             pen_blue   = pg.mkPen(color=(50, 50, 255, 255), width=2, symbol='t')
             pen_blue2  = pg.mkPen(color=(50, 50, 255, 255), width=1)
@@ -65,29 +65,29 @@ class livePlotter:
             self.win.nextRow()
 
             # FOURTH SUBPLOT OBJECT
-            self.p4 = self.win.addPlot(title="EXPERIMENTAL")
+            self.p4 = self.win.addPlot(title="Not Used Yet")
             self.p4.setXRange(0,final_time,padding=0)
             self.p4.setYRange(1100,3300,padding=0)
-            self.p4.setLabel('left', "Altitude (m)")
-            self.p4.setLabel('bottom', "Time (s)")
+            self.p4.setLabel('left', "-- (m)")
+            self.p4.setLabel('bottom', "-- (s)")
             self.p4.showGrid(x=True, y=True)
             self.meas4 = self.p4.plot(pen=pen_green, name='Curve 4')
 
             # FIFTH SUBPLOT OBJECT
-            self.p5 = self.win.addPlot(title="EXPERIMENTAL")
+            self.p5 = self.win.addPlot(title="Error vs. Time")
             self.p5.setXRange(0,final_time,padding=0)
-            self.p5.setYRange(1100,3300,padding=0)
-            self.p5.setLabel('left', "Altitude (m)")
+            #self.p5.setYRange(1100,3300,padding=0)
+            self.p5.setLabel('left', "Velocity Error (m/s)")
             self.p5.setLabel('bottom', "Time (s)")
             self.p5.showGrid(x=True, y=True)
-            self.meas5 = self.p5.plot(pen=pen_green, name='Curve 5')
+            self.meas5 = self.p5.plot(pen=pen_green, name='Curve 6')
 
             # SIXTH SUBPLOT OBJECT
-            self.p6 = self.win.addPlot(title="Reference Error")
-            self.p6.setXRange(0,final_time,padding=0)
-            self.p6.setYRange(1100,3300,padding=0)
-            self.p6.setLabel('left', "Altitude (m)")
-            self.p6.setLabel('bottom', "Time (s)")
+            self.p6 = self.win.addPlot(title="Error vs. Height")
+            self.p6.setXRange(1100,3300,padding=0)
+            #self.p6.setYRange(1100,3300,padding=0)
+            self.p6.setLabel('left', "Velocity Error (m/s)")
+            self.p6.setLabel('bottom', "h (m)")
             self.p6.showGrid(x=True, y=True)
             self.meas6 = self.p6.plot(pen=pen_green, name='Curve 6')
 
@@ -116,7 +116,6 @@ class livePlotter:
             x = rocket.t_all[0:rocket.i]
             y = rocket.h_all[0:rocket.i]
             self.meas1.setData(x,y)
-            self.meas4.setData(x,y)
 
             # get time and h_dot for the rocket
             #x = rocket.t_all[0:rocket.i] # x is already this
@@ -127,6 +126,16 @@ class livePlotter:
             x = rocket.h_all[0:rocket.i]
             #y = rocket.hd_all[0:rocket.i] # y is already this
             self.meas3.setData(x,y)
+
+            # get time and e_hd for the rocket
+            x = rocket.t_all[0:rocket.i]
+            y = rocket.e_hd[0:rocket.i]
+            self.meas5.setData(x,y)
+
+            # get h and e_hd for the rocket
+            x = rocket.h_all[0:rocket.i]
+            y = rocket.e_hd[0:rocket.i]
+            self.meas6.setData(x,y)
 
 
             # update the plotted data
