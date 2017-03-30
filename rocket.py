@@ -13,7 +13,7 @@ class rocketClass:
         # when structured for monte carlo, many of these will be sampled
         # best to consider these beyond our control
         self.g      = 9.81      # m/s^2     (earth's gravity)
-        self.h_0    = 1188.72   # m         (3900ft, Las Cruces, NM)            NOTE: we need to take into account the amount of altitude gain during burn
+        self.h_0    = 1188.72   # m         (3900ft, Las Cruces, NM)            NOTE: we need to take into account the amount of altitude gain during burn 893.9m
         self.h_f    = 3048      # m         (10000ft, final destination)
         self.hd_0   = 296       # m/s       (post-burn velocity)                REFINE
         self.rho_0  = 1.036     # kg/m^3    (for 3900ft, 70degF, 15% humidity)  NOTE: could search for a formula for this to be able to vary temp, humidity, etc
@@ -24,8 +24,8 @@ class rocketClass:
 
         self.CD_b   = 0.6       # unitless  (drag base coefficient)             REFINE
         self.CD_s   = 0.02      # unitless  (drag slope CD/angle rate)          FIX FIX FIX (assumes linear relationship)
-        self.A      = 0.025     # m^2       (reference area)                    FIX FIX FIX
-        self.th_max = 10        # deg       (maximum drag flap angle)           FIX FIX FIX
+        self.A      = 0.025     # m^2       (reference area)                    FIX FIX FIX 0.0192 m^2 from openrocket
+        self.th_max = 10        # deg       (maximum drag flap angle)           FIX FIX FIX 90 (for now)
 
         # initialize current states
         self.h      = self.h_0

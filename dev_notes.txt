@@ -34,15 +34,11 @@ is considered low priority. We ought to get a simple closed-loop example.
 NOTES 3/30/2017:
 We need to create a dedicated simulation model for the drag flap deployment
 
- - altitude gain during burn
- - velocity after burn
- - aircraft mass after burn
- - drag coefficient
- - drag coefficient as function of drag fin deployment (full relationship and approximation)
- - reference area for drag (decide a convention and stick to it)
- - max deployment angle, for saturation
- - theta performance, irl, we can't expect instantaneous angle
- - barometer noise characteristics
- - a good wind gust model for disturbances
+
+ - drag coefficient from wind tunnel
+ - drag coefficient as function of drag fin deployment (full relationship and approximation) to do list
+ - theta performance, irl, we can't expect instantaneous angle 0 to 90 in 1-2 seconds ... for now
+ - barometer noise characteristics - to do
+ - a good wind gust model for disturbances (use uav book)
  - video of drag flaps deploying
  - at what velocity can we deploy flaps and not rip apart the rocket
