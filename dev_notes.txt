@@ -1,3 +1,6 @@
+EVENTUALLY REMOVE THIS FILE, it's for half-baked development ideas,
+long-term important concepts ought to be in the README.md
+
 f = ma
 -g -D = m * h_ddot
 D = 0.5 rho h_dot^2 CD

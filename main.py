@@ -43,6 +43,8 @@ for t in times:
     rocket.propagateStates(dt)
     plotter.updateItems(rocket, t, time.time())
     # need to implement adaptive plotting framerate
+    # because updating the data in the plotting objects takes a long time
+    # once the vectors are large: this is why it drops below real-time
 
 
 

@@ -44,12 +44,12 @@ class rocketClass:
         self.i          = 1 # index for next iteration
 
         # establish the reference trajectory
-        CD_ref = self.CD_b * 1.2; # NOTE: in the future we won't know CD_b, this is only a temporary assignment
+        CD_ref = self.CD_b * 1.2                                                # NOTE: in the future we won't know CD_b, this is only a temporary assignment
         self.refTrajectory(CD_ref)
 
         # start controller input at zero
-        self.theta = 0
-        self.th_all[0]  = self.theta
+        self.th = 0
+        self.th_all[0] = self.th
 
 
     def propagateStates(self, dt):
@@ -65,7 +65,7 @@ class rocketClass:
         # then use the change in height to find the current air density
         # then find the overall drag and the subsequent acceleration
 
-        CD      = self.CD_b + self.CD_s * self.theta;
+        CD      = self.CD_b + self.CD_s * self.th;
 
         h_diff  = self.h - self.h_0
         ratio   = (self.T_0 - self.alpha*h_diff)/self.T_0
@@ -148,8 +148,9 @@ class rocketClass:
         self.e_hd[0]    = self.hd - self.hd_cmd
 
     def saturateControl(self):
-        self.theta = max(self.theta, 0)
-        self.theta = min(self.theta, self.th_max)
+        # prevent the control input from going beyond physical constraints
+        self.th = max(self.th, 0)
+        self.th = min(self.th, self.th_max)
 
     def setControl(self):
         # this is the basic controller for now
@@ -157,15 +158,15 @@ class rocketClass:
         # this a a garbage P controller which sees some DC offset
         # sim is currently using a guessed model for the relationship between
         # theta and DC
-        self.theta = 20 * (self.hd - self.hd_cmd)
+        self.th = 20 * (self.hd - self.hd_cmd)
 
 
         # we need more information about the theta performance,
         # irl, we wont be getting instantaneous theta
         # we need to make our control input "th_cmd" then have a separate model
-        # so simulate the actual theta performance
+        # to simulate the actual theta performance
 
         self.saturateControl()
 
         # remember the control input for plotting
-        self.th_all[self.i] = self.theta
+        self.th_all[self.i] = self.th
