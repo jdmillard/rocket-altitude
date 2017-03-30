@@ -40,5 +40,5 @@ We need to create a dedicated simulation model for the drag flap deployment
  - max deployment angle, for saturation
  - theta performance, irl, we can't expect instantaneous angle
  - barometer noise characteristics
- - a good wind gust model
+ - a good wind gust model for disturbances
  - video of drag flaps deploying
