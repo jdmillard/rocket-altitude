@@ -1,6 +1,8 @@
 '''
 The entire purpose of these functions is to find the least common multple
 of n numbers. lcm_mult is the one to import
+
+ >>> NOT CURRENTLY USED <<<
 '''
 
 # define greatest common divisor function (2 numbers)
