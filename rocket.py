@@ -25,6 +25,7 @@ class rocketClass:
         self.CD_b   = 0.6       # unitless  (drag base coefficient)             REFINE
         self.CD_s   = 0.02      # unitless  (drag slope CD/angle rate)          FIX FIX FIX (assumes linear relationship)
         self.A      = 0.025     # m^2       (reference area)                    FIX FIX FIX
+        self.th_max = 10        # deg       (maximum drag flap angle)           FIX FIX FIX
 
         # initialize current states
         self.h      = self.h_0
@@ -35,6 +36,7 @@ class rocketClass:
         self.hd_all = np.empty(times.size+1)    # history of h_dot  (velocity)
         self.t_all  = np.empty(times.size+1)    # history of time
         self.e_hd   = np.empty(times.size+1)    # history of reference error
+        self.th_all = np.empty(times.size+1)    # history of theta input
 
         self.h_all[0]   = self.h
         self.hd_all[0]  = self.hd
@@ -47,6 +49,7 @@ class rocketClass:
 
         # start controller input at zero
         self.theta = 0
+        self.th_all[0]  = self.theta
 
 
     def propagateStates(self, dt):
@@ -144,6 +147,9 @@ class rocketClass:
         self.hd_cmd     = np.interp(self.h, self.h_ref, self.hd_ref)
         self.e_hd[0]    = self.hd - self.hd_cmd
 
+    def saturateControl(self):
+        self.theta = max(self.theta, 0)
+        self.theta = min(self.theta, self.th_max)
 
     def setControl(self):
         # this is the basic controller for now
@@ -151,13 +157,15 @@ class rocketClass:
         # this a a garbage P controller which sees some DC offset
         # sim is currently using a guessed model for the relationship between
         # theta and DC
-        self.theta = 15 * (self.hd - self.hd_cmd)
+        self.theta = 20 * (self.hd - self.hd_cmd)
 
-        # needs saturation to be legit
 
-        # idea: make a fake controller testing environment without gravity
-        # and without saturation and make sure that we can get really good
-        # performance for velocity tracking with a square wave
-
-        # we also need more information about the theta performance,
+        # we need more information about the theta performance,
         # irl, we wont be getting instantaneous theta
+        # we need to make our control input "th_cmd" then have a separate model
+        # so simulate the actual theta performance
+
+        self.saturateControl()
+
+        # remember the control input for plotting
+        self.th_all[self.i] = self.theta

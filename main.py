@@ -42,6 +42,7 @@ for t in times:
     rocket.setControl()
     rocket.propagateStates(dt)
     plotter.updateItems(rocket, t, time.time())
+    # need to implement adaptive plotting framerate
 
 
 

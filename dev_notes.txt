@@ -28,6 +28,8 @@ Error is plotted. I'd like to eventually update the state propagation and refere
 trajectory generation to use a better numerical integration technique, but this
 is considered low priority. We ought to get a simple closed-loop example.
 
+NOTES 3/30/2017:
+We need to create a dedicated simulation model for the drag flap deployment
 
  - altitude gain during burn
  - velocity after burn
@@ -39,3 +41,4 @@ is considered low priority. We ought to get a simple closed-loop example.
  - theta performance, irl, we can't expect instantaneous angle
  - barometer noise characteristics
  - a good wind gust model
+ - video of drag flaps deploying
