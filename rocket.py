@@ -13,23 +13,25 @@ class rocketClass:
         # when structured for monte carlo, many of these will be sampled
         # best to consider these beyond our control
         self.g      = 9.81      # m/s^2     (earth's gravity)
-        self.h_0    = 1188.72   # m         (3900ft, Las Cruces, NM)            NOTE: we need to take into account the amount of altitude gain during burn 893.9m
+        self.h_0    = 1188.72   # m         (3900ft, Las Cruces, NM)
+        self.h_b    = 893.9     # m         (altitude gained during burn)       REFINE, LARGE VARIANCE
         self.h_f    = 3048      # m         (10000ft, final destination)
-        self.hd_0   = 296       # m/s       (post-burn velocity)                REFINE
+        self.hd_0   = 296       # m/s       (post-burn velocity)                REFINE, LARGE VARIANCE
         self.rho_0  = 1.036     # kg/m^3    (for 3900ft, 70degF, 15% humidity)  NOTE: could search for a formula for this to be able to vary temp, humidity, etc
         self.T_0    = 294.261   # K         (70degF in Kelvin)                  NOTE: could use formula for this to vary temp
         self.alpha  = 0.0065    # K/m       (low altitude temperature rate)
         self.n      = 5.2561    # unitless  (gas constant)
-        self.m      = 20.5      # kg        (post-burn aircraft mass)           REFINE
+        self.m      = 20.5      # kg        (post-burn aircraft mass)           REFINE, MEDIUM VARIANCE
 
         self.CD_b   = 0.6       # unitless  (drag base coefficient)             REFINE
-        self.CD_s   = 0.02      # unitless  (drag slope CD/angle rate)          FIX FIX FIX (assumes linear relationship)
-        self.A      = 0.025     # m^2       (reference area)                    FIX FIX FIX 0.0192 m^2 from openrocket
-        self.th_max = 10        # deg       (maximum drag flap angle)           FIX FIX FIX 90 (for now)
+        self.CD_s   = 0.05      # unitless  (drag slope CD/angle rate)          FIX FIX FIX (arbitrarily GUESSED and assumes linear relationship)
+        self.A      = 0.0192    # m^2       (reference area, cross section)
+        self.th_max = 90        # deg       (maximum drag flap angle)           COULD EVENTUALLY CHANGE
 
         # initialize current states
-        self.h      = self.h_0
+        self.h      = self.h_0 + self.h_b
         self.hd     = self.hd_0
+        self.th     = 0
 
         # initialize history vectors
         self.h_all  = np.empty(times.size+1)    # history of h      (height)
@@ -40,16 +42,13 @@ class rocketClass:
 
         self.h_all[0]   = self.h
         self.hd_all[0]  = self.hd
+        self.th_all[0]  = self.th
         self.t_all[0]   = 0
         self.i          = 1 # index for next iteration
 
         # establish the reference trajectory
         CD_ref = self.CD_b * 1.2                                                # NOTE: in the future we won't know CD_b, this is only a temporary assignment
         self.refTrajectory(CD_ref)
-
-        # start controller input at zero
-        self.th = 0
-        self.th_all[0] = self.th
 
 
     def propagateStates(self, dt):
@@ -96,7 +95,7 @@ class rocketClass:
         # this is done starting from sea level in order to be more complete
         # vary hd_0_ref until the open loop trajectory arrives at desired h
 
-        # in the future, if we have a good on-line drage estimation, this
+        # in the future, if we have a good on-line drag estimation, this
         # reference trajectory could be updated during flight, but for now
         # we'll use pessimistic settings
 
