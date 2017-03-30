@@ -1,50 +1,39 @@
 f = ma
 -g -D = m * h_ddot
 D = 0.5 rho h_dot^2 CD
+rho = ...
 CD = m*theta + b
 
-x1; h    ; h_dot = x2
-x2; h_dot; h_ddot = (formulas above dependent on params, h_dot and input, theta)
-using straight theta would require bandwidth separation fyi
+The end goal is to design a controller that reliably arrives at a desired altitude
+in a Monte Carlo simulation which high variance on key parameters. We'd also like
+to design a high-fidelity observer which simulates realistic noise on the relevant
+sensors.
 
-linearize, look into eq point
-close loop, aim for no overshoot, end sim when h_dot goes negative
+Due to the difficult differential equations, an iterative approach is taken to
+create a reference trajectory with pessimistic drag. The idea is at any point,
+remain faster - drive the error to zero without overshooting (negative error).
 
-output of height?
-output of h_dot with schedule? where schedule is maxxed at beginning and comes down
-and zeros on the near-dragless trajectory on desired height?
-we could have a draggless map of h_d-h versus velocity
-we could augment it with a liberaldrag model for a perfect h versus h_dot to land there
-this way (solve diffeq for perfect schedule, think: integrate over the excess force),
- the controller will always require some extra drag to stay on trajectory
-
-then use our controller to stay on that trajectory this could be built into controller perhaps?
-there is distribution on everything so montecarlo is the way to go to fine-tune this
-
-hdot |
-     |
-     | * * *
-     |_______
-          h
-first star is the dragless
-seconnd star is the +draggy
-thrid star is the desired; all 3 converge to zero at the desired height
-
-to approach this curve, we'll want to do system type identifiation to ensure
-it can track a ramp=like input - inportant or it will always overshoot
-
-also, we could apply the basic controller and h_dot slowdown to a gravity-less scenario to get time-constant
-
-also, you could do adaptive control over m and b parameters, if so, we could update the schedule (complicated)
-
-total engergy approach: turns out it's actually a similar concept because it would also require
-scheduling to anticipate the drag drain
-et = e_p + e_k
-ed =
+A perhaps more sophisticated approach would be to try and estimate the drag
+coefficient on-line and continually update the reference trajectory.
 
 
 NOTES 3/25/2017:
 JM: the reference trajectory is now generated from sea level, this gives us the
-desired hd for any h. now I'd like to create a plot of the error between the
+desired hd for any h. Now I'd like to create a plot of the error between the
 current trajectory and the reference trajectory over time. This will require
 some interpolation from the reference trajectory since it's not a 1-1 mapping
+
+NOTES 3/29/2017:
+Error is plotted. I'd like to eventually update the state propagation and reference
+trajectory generation to use a better numerical integration technique, but this
+is considered low priority. We ought to get a simple closed-loop example.
+
+
+ - altitude gain during burn
+ - velocity after burn
+ - aircraft mass after burn
+ - drag coefficient
+ - drag coefficient as function of drag fin deployment (full relationship and approximation)
+ - reference area for drag (decide a convention and stick to it)
+ - max deployment angle, for saturation
+ - theta performance, irl, we can't expect instantaneous angle

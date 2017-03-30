@@ -39,7 +39,8 @@ plotter = livePlotter(rocket, final_time=final_time, plot_real_time=True)
 # perform simulation
 for t in times:
 
-    rocket.propagateStates(dt, 0)
+    rocket.setControl()
+    rocket.propagateStates(dt)
     plotter.updateItems(rocket, t, time.time())
 
 

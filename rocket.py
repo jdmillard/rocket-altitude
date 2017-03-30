@@ -45,8 +45,11 @@ class rocketClass:
         CD_ref = self.CD_b * 1.2; # NOTE: in the future we won't know CD_b, this is only a temporary assignment
         self.refTrajectory(CD_ref)
 
+        # start controller input at zero
+        self.theta = 0
 
-    def propagateStates(self, dt, theta):
+
+    def propagateStates(self, dt):
         # propagate full nonlinear equations of motion
 
         # NOTE: This uses "Euler's First-Order Forward Method" which is the
@@ -59,7 +62,7 @@ class rocketClass:
         # then use the change in height to find the current air density
         # then find the overall drag and the subsequent acceleration
 
-        CD      = self.CD_b + self.CD_s*theta;
+        CD      = self.CD_b + self.CD_s * self.theta;
 
         h_diff  = self.h - self.h_0
         ratio   = (self.T_0 - self.alpha*h_diff)/self.T_0
@@ -140,3 +143,21 @@ class rocketClass:
         # generate a starting hd_cmd and the first error history
         self.hd_cmd     = np.interp(self.h, self.h_ref, self.hd_ref)
         self.e_hd[0]    = self.hd - self.hd_cmd
+
+
+    def setControl(self):
+        # this is the basic controller for now
+
+        # this a a garbage P controller which sees some DC offset
+        # sim is currently using a guessed model for the relationship between
+        # theta and DC
+        self.theta = 15 * (self.hd - self.hd_cmd)
+
+        # needs saturation to be legit
+
+        # idea: make a fake controller testing environment without gravity
+        # and without saturation and make sure that we can get really good
+        # performance for velocity tracking with a square wave
+
+        # we also need more information about the theta performance,
+        # irl, we wont be getting instantaneous theta
