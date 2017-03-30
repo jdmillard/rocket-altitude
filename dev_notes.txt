@@ -45,3 +45,4 @@ We need to create a dedicated simulation model for the drag flap deployment
  - barometer noise characteristics
  - a good wind gust model for disturbances
  - video of drag flaps deploying
+ - at what velocity can we deploy flaps and not rip apart the rocket
