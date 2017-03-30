@@ -37,3 +37,5 @@ is considered low priority. We ought to get a simple closed-loop example.
  - reference area for drag (decide a convention and stick to it)
  - max deployment angle, for saturation
  - theta performance, irl, we can't expect instantaneous angle
+ - barometer noise characteristics
+ - a good wind gust model
