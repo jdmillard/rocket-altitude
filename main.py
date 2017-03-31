@@ -23,6 +23,7 @@ signal.signal(signal.SIGINT, signal_handler)
 This is main.py which initializes the important objects and governs the timing
 of each simulation piece.
 
+The simulation starts immediately after burn has finished.
 '''
 
 

@@ -7,9 +7,10 @@ class rocketClass:
     functions to simulate dynamics and observation.
     """
     def __init__(self, times):
-        # this is the constructor
+        # this is the constructor, it runs once upon class instantiation
+        # "self." means the variable is a member of this class
 
-        # establish constants (see notes to make sense of these)
+        # establish constants
         # when structured for monte carlo, many of these will be sampled
         # best to consider these beyond our control
         self.g      = 9.81      # m/s^2     (earth's gravity)
@@ -33,13 +34,14 @@ class rocketClass:
         self.hd     = self.hd_0
         self.th     = 0
 
-        # initialize history vectors
+        # initialize history vectors for plotting
         self.h_all  = np.empty(times.size+1)    # history of h      (height)
         self.hd_all = np.empty(times.size+1)    # history of h_dot  (velocity)
         self.t_all  = np.empty(times.size+1)    # history of time
         self.e_hd   = np.empty(times.size+1)    # history of reference error
         self.th_all = np.empty(times.size+1)    # history of theta input
 
+        # fill first element of history vectors
         self.h_all[0]   = self.h
         self.hd_all[0]  = self.hd
         self.th_all[0]  = self.th
@@ -153,6 +155,8 @@ class rocketClass:
 
     def setControl(self):
         # this is the basic controller for now
+
+        # add logic to check if we've passed the "safe deploy velocity"
 
         # this a a garbage P controller which sees some DC offset
         # sim is currently using a guessed model for the relationship between
