@@ -69,7 +69,9 @@ class livePlotter:
         self.p4.setLabel('left', "theta (deg)")
         self.p4.setLabel('bottom', "time (s)")
         self.p4.showGrid(x=True, y=True)
-        self.meas4 = self.p4.plot(pen=pen_green, name='Curve 4')
+        self.p4.addLegend(offset=[-10,10])
+        self.meas4 = self.p4.plot(pen=pen_blue, name='Current Theta')
+        self.meas4a = self.p4.plot(pen=pen_green2, name='Desired Theta')
 
         # FIFTH SUBPLOT OBJECT
         self.p5 = self.win.addPlot(title="Error vs. Time")
@@ -132,10 +134,15 @@ class livePlotter:
             #y = rocket.hd_all[0:rocket.i] # y is already this
             self.meas3.setData(x,y)
 
-            # get time and theta for the rocket
+            # get time and theta for the air brake
             x = rocket.t_all[0:rocket.i]
             y = rocket.th_all[0:rocket.i]
             self.meas4.setData(x,y)
+
+            # get time and theta_cmd for the air brake
+            #x = rocket.t_all[0:rocket.i]
+            y = rocket.th_cmd_all[0:rocket.i]
+            self.meas4a.setData(x,y)
 
             # get time and e_hd for the rocket
             #x = rocket.t_all[0:rocket.i]

@@ -27,7 +27,8 @@ class rocketClass:
         self.CD_b   = 0.6       # unitless  (drag base coefficient)             REFINE
         self.CD_s   = 0.06      # unitless  (drag slope CD/angle rate)          FIX FIX FIX (arbitrarily GUESSED and assumes linear relationship, needs complete overhaul)
         self.A      = 0.0192    # m^2       (reference area, cross section)
-        self.th_max = 60        # deg       (maximum drag flap angle = 90deg)   COULD EVENTUALLY CHANGE
+        self.th_max = 60        # deg       (maximum air brake angle = 90deg)   COULD EVENTUALLY CHANGE
+        self.th_r   = 45        # deg/s     (air brake rate of change)          0 to 90deg in 2 seconds
 
         # initialize current states and inputs
         self.h      = self.h_0 + self.h_b
@@ -49,7 +50,9 @@ class rocketClass:
         self.th_all[0]      = self.th
         self.th_cmd_all[0]  = self.th_cmd
         self.t_all[0]       = 0
-        self.i              = 1 # index for next iteration
+
+        # index for next iteration
+        self.i              = 1
 
         # establish the reference trajectory
         CD_ref = self.CD_b * 1.2                                                # NOTE: in the future we won't know CD_b, this is only a temporary assignment
@@ -98,13 +101,11 @@ class rocketClass:
         self.i = self.i + 1
 
     def airBrake(self, dt):
-        # this method simulates the constant-change model of the air brake
-
-        # the rate (deg/sec)
-        rate = 45 # (0 to 90deg in 2 seconds)
+        # this simulates the constant-change model of the air brake
+        # using the commanded and current theta (th_cmd & th)
 
         # determine the magnitude of the change in angle
-        d_theta_mag = min(rate*dt, abs(self.th_cmd - self.th))
+        d_theta_mag = min(self.th_r*dt, abs(self.th_cmd - self.th))
 
         # determine the direction of the change in angle
         d_theta_sign = np.sign(self.th_cmd - self.th)
@@ -182,15 +183,13 @@ class rocketClass:
         # this a a garbage P controller which sees some DC offset
         # sim is currently using a guessed model for the relationship between
         # theta and DC
-        self.th_cmd = 5 * (self.hd - self.hd_cmd)
+        self.th_cmd = 15 * (self.hd - self.hd_cmd)
+        # still need to parameterize the gains
 
 
-        # we need more information about the theta performance,
-        # irl, we wont be getting instantaneous theta
-        # we need to make our control input "th_cmd" then have a separate model
-        # to simulate the actual theta performance
+        # we still need more information about the theta performance,
 
         self.saturateControl()
 
         # remember the control input for plotting
-        self.th_cmd_all[self.i] = self.th
+        self.th_cmd_all[self.i] = self.th_cmd
