@@ -25,9 +25,9 @@ class rocketClass:
         self.m      = 20.5      # kg        (post-burn aircraft mass)           REFINE, MEDIUM VARIANCE
 
         self.CD_b   = 0.6       # unitless  (drag base coefficient)             REFINE
-        self.CD_s   = 0.05      # unitless  (drag slope CD/angle rate)          FIX FIX FIX (arbitrarily GUESSED and assumes linear relationship)
+        self.CD_s   = 0.06      # unitless  (drag slope CD/angle rate)          FIX FIX FIX (arbitrarily GUESSED and assumes linear relationship, needs complete overhaul)
         self.A      = 0.0192    # m^2       (reference area, cross section)
-        self.th_max = 90        # deg       (maximum drag flap angle)           COULD EVENTUALLY CHANGE
+        self.th_max = 60        # deg       (maximum drag flap angle = 90deg)   COULD EVENTUALLY CHANGE
 
         # initialize current states and inputs
         self.h      = self.h_0 + self.h_b
@@ -69,7 +69,7 @@ class rocketClass:
         # then use the change in height to find the current air density
         # then find the overall drag and the subsequent acceleration
 
-        # simulate the behavior of the air brake
+        # simulate the transient behavior of the air brake
         self.airBrake(dt)
 
         CD      = self.CD_b + self.CD_s * self.th;
@@ -98,10 +98,10 @@ class rocketClass:
         self.i = self.i + 1
 
     def airBrake(self, dt):
-        # this method simulates the constant-motion model of the air brake
+        # this method simulates the constant-change model of the air brake
 
         # the rate (deg/sec)
-        rate = 20 # pessimistically slow (0 to 90deg in 4.5 seconds)
+        rate = 45 # (0 to 90deg in 2 seconds)
 
         # determine the magnitude of the change in angle
         d_theta_mag = min(rate*dt, abs(self.th_cmd - self.th))
@@ -182,7 +182,7 @@ class rocketClass:
         # this a a garbage P controller which sees some DC offset
         # sim is currently using a guessed model for the relationship between
         # theta and DC
-        self.th_cmd = 20 * (self.hd - self.hd_cmd)
+        self.th_cmd = 5 * (self.hd - self.hd_cmd)
 
 
         # we need more information about the theta performance,

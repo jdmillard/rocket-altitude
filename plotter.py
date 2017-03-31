@@ -33,7 +33,7 @@ class livePlotter:
         # FIRST SUBPLOT OBJECT
         self.p1 = self.win.addPlot(title="Altitude vs. Time")
         self.p1.setXRange(0,final_time,padding=0)
-        self.p1.setYRange(rocket.h_0*0.9,rocket.h_f*1.1,padding=0)
+        self.p1.setYRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
         self.p1.setLabel('left', "Altitude (m)")
         self.p1.setLabel('bottom', "Time (s)") # , units='s'
         self.p1.showGrid(x=True, y=True)
@@ -50,7 +50,7 @@ class livePlotter:
 
         # THIRD SUBPLOT OBJECT
         self.p3 = self.win.addPlot(title="h_dot vs. h")
-        self.p3.setXRange(rocket.h_0*0.9,rocket.h_f*1.1,padding=0)
+        self.p3.setXRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
         self.p3.setYRange(0,rocket.hd_0*1.1,padding=0)
         self.p3.setLabel('left', "h_dot (m/s)")
         self.p3.setLabel('bottom', "h (m)")
@@ -74,7 +74,7 @@ class livePlotter:
         # FIFTH SUBPLOT OBJECT
         self.p5 = self.win.addPlot(title="Error vs. Time")
         self.p5.setXRange(0,final_time,padding=0)
-        #self.p5.setYRange(rocket.h_0*0.9,rocket.h_f*1.1,padding=0)
+        #self.p5.setYRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
         self.p5.setLabel('left', "Velocity Error (m/s)")
         self.p5.setLabel('bottom', "Time (s)")
         self.p5.showGrid(x=True, y=True)
@@ -82,8 +82,8 @@ class livePlotter:
 
         # SIXTH SUBPLOT OBJECT
         self.p6 = self.win.addPlot(title="Error vs. Height")
-        self.p6.setXRange(rocket.h_0*0.9,rocket.h_f*1.1,padding=0)
-        #self.p6.setYRange(rocket.h_0*0.9,rocket.h_f*1.1,padding=0)
+        self.p6.setXRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
+        #self.p6.setYRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
         self.p6.setLabel('left', "Velocity Error (m/s)")
         self.p6.setLabel('bottom', "h (m)")
         self.p6.showGrid(x=True, y=True)

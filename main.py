@@ -30,7 +30,7 @@ The simulation starts immediately after burn has finished.
 # set dt, start, end, and create array of all times
 dt = 0.01
 start_time = 0
-final_time = 20
+final_time = 16
 times = np.arange(start_time+dt,final_time+dt,dt)
 
 # instantiate plotter and rocket classes
