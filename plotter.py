@@ -75,9 +75,9 @@ class livePlotter:
 
         # FIFTH SUBPLOT OBJECT
         self.p5 = self.win.addPlot(title="Error vs. Time (logarithmic)")
-        self.p5.setXRange(0,final_time,padding=0)
-        #self.p5.setYRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
         self.p5.setLogMode(False,True)
+        self.p5.setXRange(0,final_time,padding=0)
+        #self.p5.setYRange( , ,padding=0)
         self.p5.setLabel('left', "Velocity Error (m/s)")
         self.p5.setLabel('bottom', "Time (s)")
         self.p5.showGrid(x=True, y=True)
