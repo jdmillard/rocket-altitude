@@ -29,24 +29,27 @@ class rocketClass:
         self.A      = 0.0192    # m^2       (reference area, cross section)
         self.th_max = 90        # deg       (maximum drag flap angle)           COULD EVENTUALLY CHANGE
 
-        # initialize current states
+        # initialize current states and inputs
         self.h      = self.h_0 + self.h_b
         self.hd     = self.hd_0
         self.th     = 0
+        self.th_cmd = 0
 
         # initialize history vectors for plotting
-        self.h_all  = np.empty(times.size+1)    # history of h      (height)
-        self.hd_all = np.empty(times.size+1)    # history of h_dot  (velocity)
-        self.t_all  = np.empty(times.size+1)    # history of time
-        self.e_hd   = np.empty(times.size+1)    # history of reference error
-        self.th_all = np.empty(times.size+1)    # history of theta input
+        self.h_all      = np.empty(times.size+1)    # history of h
+        self.hd_all     = np.empty(times.size+1)    # history of h_dot
+        self.t_all      = np.empty(times.size+1)    # history of time
+        self.e_hd       = np.empty(times.size+1)    # history of ref error
+        self.th_all     = np.empty(times.size+1)    # history of theta
+        self.th_cmd_all = np.empty(times.size+1)    # history of theta desired
 
         # fill first element of history vectors
-        self.h_all[0]   = self.h
-        self.hd_all[0]  = self.hd
-        self.th_all[0]  = self.th
-        self.t_all[0]   = 0
-        self.i          = 1 # index for next iteration
+        self.h_all[0]       = self.h
+        self.hd_all[0]      = self.hd
+        self.th_all[0]      = self.th
+        self.th_cmd_all[0]  = self.th_cmd
+        self.t_all[0]       = 0
+        self.i              = 1 # index for next iteration
 
         # establish the reference trajectory
         CD_ref = self.CD_b * 1.2                                                # NOTE: in the future we won't know CD_b, this is only a temporary assignment
@@ -65,6 +68,9 @@ class rocketClass:
         # first find the drag coefficient based on the current angle theta
         # then use the change in height to find the current air density
         # then find the overall drag and the subsequent acceleration
+
+        # simulate the behavior of the air brake
+        self.airBrake(dt)
 
         CD      = self.CD_b + self.CD_s * self.th;
 
@@ -91,6 +97,21 @@ class rocketClass:
         # increment index
         self.i = self.i + 1
 
+    def airBrake(self, dt):
+        # this method simulates the constant-motion model of the air brake
+
+        # the rate (deg/sec)
+        rate = 20 # pessimistically slow (0 to 90deg in 4.5 seconds)
+
+        # determine the magnitude of the change in angle
+        d_theta_mag = min(rate*dt, abs(self.th_cmd - self.th))
+
+        # determine the direction of the change in angle
+        d_theta_sign = np.sign(self.th_cmd - self.th)
+
+        # propagate the air brake angle and update the history vector
+        self.th = self.th + d_theta_mag*d_theta_sign
+        self.th_all[self.i] = self.th
 
     def refTrajectory(self, CD_ref):
         # use pessimistic parameters to define a reference trajectory (hd vs h)
@@ -150,8 +171,8 @@ class rocketClass:
 
     def saturateControl(self):
         # prevent the control input from going beyond physical constraints
-        self.th = max(self.th, 0)
-        self.th = min(self.th, self.th_max)
+        self.th_cmd = max(self.th_cmd, 0)
+        self.th_cmd = min(self.th_cmd, self.th_max)
 
     def setControl(self):
         # this is the basic controller for now
@@ -161,7 +182,7 @@ class rocketClass:
         # this a a garbage P controller which sees some DC offset
         # sim is currently using a guessed model for the relationship between
         # theta and DC
-        self.th = 20 * (self.hd - self.hd_cmd)
+        self.th_cmd = 20 * (self.hd - self.hd_cmd)
 
 
         # we need more information about the theta performance,
@@ -172,4 +193,4 @@ class rocketClass:
         self.saturateControl()
 
         # remember the control input for plotting
-        self.th_all[self.i] = self.th
+        self.th_cmd_all[self.i] = self.th
