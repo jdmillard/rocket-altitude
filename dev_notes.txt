@@ -19,6 +19,12 @@ remain faster - drive the error to zero without overshooting (negative error).
 A perhaps more sophisticated approach would be to try and estimate the drag
 coefficient on-line and continually update the reference trajectory.
 
+Another thought: when performing Monte Carlo sims, perform a few of them where the
+pessimistic reference drag is scaled with a unique value. Then do a plot of
+average altitude overshoot as a function of pessimistic ref drag scaling to see
+how sensitive it is to performance. Knowing this will be important for knowing
+the reliablity of the controller
+
 
 NOTES 3/25/2017:
 JM: the reference trajectory is now generated from sea level, this gives us the
