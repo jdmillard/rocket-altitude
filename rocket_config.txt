@@ -1,0 +1,13 @@
+## This are all the different variables collected from the open rocket sims.
+
+
+K3vin:
+Post-Burn Mass = 18.03          # kg
+Post-Burn Velocity = 303.39     # m/s
+Reference Area = 0.0192         # m^2
+
+
+K3vin Jr.:
+Post-Burn Mass = 2.15           # kg
+Post-Burn Velocity = 416.09     # m/s
+Reference Area = 45.604         # m^2
