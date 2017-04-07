@@ -74,8 +74,8 @@ class livePlotter:
         self.meas4a = self.p4.plot(pen=pen_green2, name='Desired Theta')
 
         # FIFTH SUBPLOT OBJECT
-        self.p5 = self.win.addPlot(title="Error vs. Time (logarithmic)")
-        self.p5.setLogMode(False,True)
+        self.p5 = self.win.addPlot(title="Error vs. Time")
+        #self.p5.setLogMode(False,True)
         self.p5.setXRange(0,final_time,padding=0)
         #self.p5.setYRange( , ,padding=0)
         self.p5.setLabel('left', "Velocity Error (m/s)")
@@ -112,7 +112,7 @@ class livePlotter:
             actual_time = sim_time
 
 
-        if self.plot_real_time or rocket.hd <= 0:
+        if self.plot_real_time or rocket.hd <= 0 or sim_time==self.tf:
             # plot no faster than actual time
             # NOTE: simulation can get slower than real time
             if actual_time < sim_time:
@@ -160,7 +160,7 @@ class livePlotter:
             self.app.processEvents() #pg.QtGui.QApplication.processEvents()
 
             # hold plot when rocket reaches maximum height
-            if rocket.hd <= 0:
+            if rocket.hd <= 0 or sim_time==self.tf:
                 print("simulation finished")
                 print("rocket altitude:", rocket.h, "m")
                 print("simulation time:", sim_time, "s")

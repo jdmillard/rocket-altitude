@@ -17,15 +17,15 @@ class rocketClass:
         self.h_0    = 1188.72   # m         (3900ft, Las Cruces, NM)
         self.h_b    = 893.9     # m         (altitude gained during burn)       REFINE, LARGE VARIANCE
         self.h_f    = 3048      # m         (10000ft, final destination)
-        self.hd_0   = 296       # m/s       (post-burn velocity)                REFINE, LARGE VARIANCE
+        self.hd_0   = 303.4     # m/s       (post-burn velocity)                REFINE, LARGE VARIANCE
         self.rho_0  = 1.036     # kg/m^3    (for 3900ft, 70degF, 15% humidity)  NOTE: could search for a formula for this to be able to vary temp, humidity, etc
         self.T_0    = 294.261   # K         (70degF in Kelvin)                  NOTE: could use formula for this to vary temp
         self.alpha  = 0.0065    # K/m       (low altitude temperature rate)
         self.n      = 5.2561    # unitless  (gas constant)
-        self.m      = 20.5      # kg        (post-burn aircraft mass)           REFINE, MEDIUM VARIANCE
+        self.m      = 18.03     # kg        (post-burn aircraft mass)           REFINE, MEDIUM VARIANCE
 
-        self.CD_b   = 0.6       # unitless  (drag base coefficient)             REFINE
-        self.CD_s   = 0.06      # unitless  (drag slope CD/angle rate)          FIX FIX FIX (arbitrarily GUESSED and assumes linear relationship, needs complete overhaul)
+        self.CD_b   = 2.1       # unitless  (drag base coefficient)             REFINE 0.6 questionably from openrocket
+        self.CD_s   = 0.21      # unitless  (drag slope CD/angle rate)          FIX FIX FIX (arbitrarily GUESSED and assumes linear relationship, needs complete overhaul)
         self.A      = 0.0192    # m^2       (reference area, cross section)
         self.th_max = 60        # deg       (maximum air brake angle = 90deg)   COULD EVENTUALLY CHANGE
         self.th_r   = 45        # deg/s     (air brake rate of change)          0 to 90deg in 2 seconds
@@ -57,6 +57,7 @@ class rocketClass:
         # establish the reference trajectory
         CD_ref = self.CD_b * 1.2                                                # NOTE: in the future we won't know CD_b, this is only a temporary assignment
         self.refTrajectory(CD_ref)
+        self.integrator = 0;
 
 
     def propagateStates(self, dt):
@@ -160,7 +161,7 @@ class rocketClass:
 
             # update the inital hd based on arrival trajectory
             disparity = self.h_f - h
-            hd_0_ref = hd_0_ref + 0.1*(disparity)
+            hd_0_ref = hd_0_ref + 1.5*(disparity)
 
         # save the final reference trajectory as a class member
         self.h_ref  = h_ref
@@ -169,27 +170,36 @@ class rocketClass:
         # generate a starting hd_cmd and the first error history
         self.hd_cmd     = np.interp(self.h, self.h_ref, self.hd_ref)
         self.e_hd[0]    = self.hd - self.hd_cmd
+        self.error_d1   = self.hd - self.hd_cmd
 
     def saturateControl(self):
         # prevent the control input from going beyond physical constraints
         self.th_cmd = max(self.th_cmd, 0)
         self.th_cmd = min(self.th_cmd, self.th_max)
 
-    def setControl(self):
+    def setControl(self, dt):
         # this is the basic controller for now
 
         # add logic to check if we've passed the "safe deploy velocity"
 
-        # this a a garbage P controller which sees some DC offset
         # sim is currently using a guessed model for the relationship between
         # theta and DC
-        self.th_cmd = 15 * (self.hd - self.hd_cmd)
-        # still need to parameterize the gains
 
+        error = self.hd - self.hd_cmd
+        error_dot = (error - self.error_d1)/dt
+        self.integrator = self.integrator + (self.error_d1 + error)*dt/2
 
-        # we still need more information about the theta performance,
+        proportional = error        * 0.5
+        integral = self.integrator  * 0.2
+        derivative = error_dot      * 0   # no derivative right now
 
+        self.th_cmd = proportional + derivative + integral
         self.saturateControl()
+
+        # add anti-windup logic
+
+        # remember this iteration's error
+        self.error_d1 = error
 
         # remember the control input for plotting
         self.th_cmd_all[self.i] = self.th_cmd

@@ -35,12 +35,12 @@ times = np.arange(start_time+dt,final_time+dt,dt)
 
 # instantiate plotter and rocket classes
 rocket  = rocketClass(times)
-plotter = livePlotter(rocket, final_time=final_time, plot_real_time=True)
+plotter = livePlotter(rocket, final_time=final_time, plot_real_time=False)
 
 # perform simulation
 for t in times:
 
-    rocket.setControl()
+    rocket.setControl(dt)
     rocket.propagateStates(dt)
     plotter.updateItems(rocket, t, time.time())
     # need to implement adaptive plotting framerate
