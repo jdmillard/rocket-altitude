@@ -16,10 +16,16 @@ class livePlotter:
         self.app = QtGui.QApplication([])
 
         # create the widget ("Graphics Window" allows stacked plots)
-        self.win = pg.GraphicsWindow(title="Live Plotting")
-        self.win.resize(1500,1000)    # set window size
-        self.win.move(50,50)          # set window monitor position
-        self.win.setWindowTitle('Altitude Controller Truth')
+        self.win0 = pg.GraphicsWindow(title="Live Plotting")
+        self.win0.resize(1500,1000)    # set window size
+        self.win0.move(50,50)          # set window monitor position
+        self.win0.setWindowTitle('Altitude Controller Truth')
+
+        # create another widget ("Graphics Window" allows stacked plots)
+        self.win1 = pg.GraphicsWindow(title="Live Plotting")
+        self.win1.resize(500,700)    # set window size
+        self.win1.move(200,200)          # set window monitor position
+        self.win1.setWindowTitle('Estimation')
 
         # enable antialiasing for prettier plots
         pg.setConfigOptions(antialias=True)
@@ -31,7 +37,7 @@ class livePlotter:
         pen_blue2  = pg.mkPen(color=(50, 50, 255, 255), width=1)
 
         # FIRST SUBPLOT OBJECT
-        self.p1 = self.win.addPlot(title="Altitude vs. Time")
+        self.p1 = self.win0.addPlot(title="Altitude vs. Time")
         self.p1.setXRange(0,final_time,padding=0)
         self.p1.setYRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
         self.p1.setLabel('left', "Altitude (m)")
@@ -40,7 +46,7 @@ class livePlotter:
         self.meas1 = self.p1.plot(pen=pen_blue, name='Curve 1')
 
         # SECOND SUBPLOT OBJECT
-        self.p2 = self.win.addPlot(title="Velocity vs. Time")
+        self.p2 = self.win0.addPlot(title="Velocity vs. Time")
         self.p2.setXRange(0,final_time,padding=0)
         self.p2.setYRange(0,rocket.hd_0*1.1,padding=0)
         self.p2.setLabel('left', "h_dot (m/s)")
@@ -49,7 +55,7 @@ class livePlotter:
         self.meas2 = self.p2.plot(pen=pen_blue, name='Curve 2')
 
         # THIRD SUBPLOT OBJECT
-        self.p3 = self.win.addPlot(title="h_dot vs. h")
+        self.p3 = self.win0.addPlot(title="h_dot vs. h")
         self.p3.setXRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
         self.p3.setYRange(0,rocket.hd_0*1.1,padding=0)
         self.p3.setLabel('left', "h_dot (m/s)")
@@ -60,10 +66,10 @@ class livePlotter:
         self.t_ref = self.p3.plot(pen=pen_green2, name='Reference Trajectory')
         self.t_ref.setData(rocket.h_ref, rocket.hd_ref)
 
-        self.win.nextRow()
+        self.win0.nextRow()
 
         # FOURTH SUBPLOT OBJECT
-        self.p4 = self.win.addPlot(title="Theta Control Input")
+        self.p4 = self.win0.addPlot(title="Theta Control Input")
         self.p4.setXRange(0,final_time,padding=0)
         self.p4.setYRange(0,rocket.th_max*1.1,padding=0)
         self.p4.setLabel('left', "theta (deg)")
@@ -74,7 +80,7 @@ class livePlotter:
         self.meas4a = self.p4.plot(pen=pen_green2, name='Desired Theta')
 
         # FIFTH SUBPLOT OBJECT
-        self.p5 = self.win.addPlot(title="Error vs. Time")
+        self.p5 = self.win0.addPlot(title="Error vs. Time")
         #self.p5.setLogMode(False,True)
         self.p5.setXRange(0,final_time,padding=0)
         #self.p5.setYRange( , ,padding=0)
@@ -84,13 +90,38 @@ class livePlotter:
         self.meas5 = self.p5.plot(pen=pen_green, name='Curve 6')
 
         # SIXTH SUBPLOT OBJECT
-        self.p6 = self.win.addPlot(title="Error vs. Height")
+        self.p6 = self.win0.addPlot(title="Error vs. Height")
         self.p6.setXRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
         #self.p6.setYRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
         self.p6.setLabel('left', "Velocity Error (m/s)")
         self.p6.setLabel('bottom', "h (m)")
         self.p6.showGrid(x=True, y=True)
         self.meas6 = self.p6.plot(pen=pen_green, name='Curve 6')
+
+        # SECOND WINDOW
+
+        # FIRST SUBPLOT OBJECT
+        self.p1 = self.win1.addPlot(title="h")
+        #self.p1.setXRange(0,final_time,padding=0)
+        #self.p1.setYRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
+        self.p1.setLabel('left', "Altitude (m)")
+        self.p1.setLabel('bottom', "Time (s)") # , units='s'
+        self.p1.showGrid(x=True, y=True)
+        self.state01_t = self.p1.plot(pen=pen_green, name='Truth')
+        self.state01_e = self.p1.plot(pen=pen_blue, name='Estimate')
+
+        # SECOND SUBPLOT OBJECT
+        self.win1.nextRow()
+        self.p1 = self.win1.addPlot(title="h_dot")
+        #self.p1.setXRange(0,final_time,padding=0)
+        #self.p1.setYRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
+        self.p1.setLabel('left', "Altitude Change (m/s)")
+        self.p1.setLabel('bottom', "Time (s)") # , units='s'
+        self.p1.showGrid(x=True, y=True)
+        self.state02_t = self.p1.plot(pen=pen_green, name='Truth')
+        self.state02_e = self.p1.plot(pen=pen_blue, name='Estimate')
+
+
 
         # show the plot by calling an update
         # it is needed twice (to force display on first iteration) - not sure why
@@ -154,6 +185,16 @@ class livePlotter:
             x = rocket.h_all[0:rocket.i]
             #y = rocket.e_hd[0:rocket.i]
             self.meas6.setData(x,y)
+
+            # get h truth and estimate for the rocket
+            x = rocket.t_all[0:rocket.i]
+            y = rocket.x_tru_all[0,0:rocket.i]
+            self.state01_t.setData(x,y)
+
+            # get h_dot truth and estimate for the rocket
+            #x = rocket.t_all[0:rocket.i]
+            y = rocket.x_tru_all[1,0:rocket.i]
+            self.state02_t.setData(x,y)
 
 
             # update the plotted data

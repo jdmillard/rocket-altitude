@@ -36,6 +36,19 @@ class rocketClass:
         self.th     = 0
         self.th_cmd = 0
 
+        # initialize state truth and estimate vectors
+        self.x_tru  = np.zeros((7,1))
+        self.x_hat  = np.zeros((7,1))
+
+        # populate the state truth vector
+        self.x_tru[0,0] = self.h   # altitude truth
+        self.x_tru[1,0] = self.hd  # altitude change truth
+        self.x_tru[2,0] = self.th  # theta truth
+        self.x_tru[3,0] = 0 # FIX WITH THETA DOT
+        self.x_tru[4,0] = self.CD_b*self.A
+        self.x_tru[5,0] = self.CD_s
+        self.x_tru[6,0] = self.g
+
         # initialize history vectors for plotting
         self.h_all      = np.empty(times.size+1)    # history of h
         self.hd_all     = np.empty(times.size+1)    # history of h_dot
@@ -43,6 +56,8 @@ class rocketClass:
         self.e_hd       = np.empty(times.size+1)    # history of ref error
         self.th_all     = np.empty(times.size+1)    # history of theta
         self.th_cmd_all = np.empty(times.size+1)    # history of theta desired
+        self.x_tru_all  = np.empty((7,times.size+1))
+        self.x_hat_all  = np.empty((7,times.size+1))
 
         # fill first element of history vectors
         self.h_all[0]       = self.h
@@ -50,6 +65,7 @@ class rocketClass:
         self.th_all[0]      = self.th
         self.th_cmd_all[0]  = self.th_cmd
         self.t_all[0]       = 0
+        self.x_tru_all[:,0] = self.x_tru.ravel()
 
         # index for next iteration
         self.i              = 1
@@ -89,14 +105,30 @@ class rocketClass:
         self.h  = self.h  + dt*self.hd
         self.hd = self.hd + dt*hdd
 
+        # populate the state truth vector
+        self.x_tru[0,0] = self.h   # altitude truth
+        self.x_tru[1,0] = self.hd  # altitude change truth
+        self.x_tru[2,0] = self.th  # theta truth
+        self.x_tru[3,0] = 0 # FIX WITH THETA DOT
+        self.x_tru[4,0] = self.CD_b*self.A
+        self.x_tru[5,0] = self.CD_s
+        self.x_tru[6,0] = self.g
+
+        # estimate states
+        self.estimateStates()
+
         # update the history vectors
         self.h_all[self.i]  = self.h
         self.hd_all[self.i] = self.hd
         self.t_all[self.i]  = self.t_all[self.i-1]+dt
+        self.x_tru_all[:,self.i] = self.x_tru.ravel()
+        self.x_hat_all[:,self.i] = self.x_hat.ravel()
 
         # interpolate the current hd_ref and compare to reference trajectory
         self.hd_cmd         = np.interp(self.h, self.h_ref, self.hd_ref)
         self.e_hd[self.i]   = self.hd - self.hd_cmd
+
+
 
         # increment index
         self.i = self.i + 1
@@ -203,3 +235,41 @@ class rocketClass:
 
         # remember the control input for plotting
         self.th_cmd_all[self.i] = self.th_cmd
+
+    def estimateStates(self):
+        # this is the estimation
+        # simulate noise on the sensors and
+
+
+        # propagate state estimates and covariance
+        # populate A matrix
+        #A =
+        #x_hat_dot = A*self.x_hat
+        #self.x_hat = self.x_hat + x_hat_dot*dt
+
+        #P =
+        #
+
+        # get sensor data with truth + noise
+        y_meas = np.zeros((3,1))
+
+        h_var = 10 # variance on altitude measurement MAKE THESE CLASS MEMBERS FOR THE R MATRIX
+        th_var = 1 # variance on theta measurement
+
+        y_meas[0,0] = self.h   + np.random.normal(0, np.sqrt(h_var))
+        y_meas[1,0] = self.th  + np.random.normal(0, np.sqrt(th_var))
+        y_meas[2,0] = self.g
+        #print(y_meas)
+
+        # innovation term
+        #C =
+        #y_hat = C*x_hat
+
+
+        # generate kalman gain
+
+        # perform update
+
+
+        #print('here')
+        #print(self.x_hat)
