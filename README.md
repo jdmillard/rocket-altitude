@@ -7,6 +7,7 @@ Author: Jeffrey Millard
 1. Install Python library dependencies:
     ```bash
     pip3 install numpy
+    pip3 install scipy
     pip3 install pyqtgraph
     pip3 install PyQt5
     ```

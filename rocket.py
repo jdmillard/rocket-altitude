@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.linalg as linalg
 
 
 class rocketClass:
@@ -131,7 +132,7 @@ class rocketClass:
         self.x_tru[6,0] = self.g
 
         # estimate states
-        self.estimateStates()
+        self.estimateStates(dt)
 
         # update the history vectors
         self.h_all[self.i]  = self.h
@@ -278,7 +279,7 @@ class rocketClass:
         #self.th_cmd_all[self.i] = self.th_cmd
 
 
-    def estimateStates(self):
+    def estimateStates(self, dt):
         # this is the estimation
         # simulate noise on the sensors and
 
@@ -307,9 +308,10 @@ class rocketClass:
         self.A[3,2] = term * x2**2 * x6 * -0.5
         self.A[3,5] = term * x2**2 * x3 * -0.5
 
-
         # generate state transition matrix
-        #F =
+        F = linalg.expm(self.A*dt)
+
+
         #x_hat_dot = A*self.x_hat
         #self.x_hat = self.x_hat + x_hat_dot*dt
 
