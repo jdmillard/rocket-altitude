@@ -63,10 +63,10 @@ class rocketClass:
         self.A[2,3] = 1     # remaining terms are dynamic
         self.B = np.zeros((7,1))
         self.B[3,0] = 1
-        self.Q = np.array([[0.1, 0  , 0  , 0  , 0  , 0  , 0  ],
-                           [0  , 0.1, 0  , 0  , 0  , 0  , 0  ],
-                           [0  , 0  , 0.1, 0  , 0  , 0  , 0  ],
-                           [0  , 0  , 0  , 0.1, 0  , 0  , 0  ],
+        self.Q = np.array([[1.1 , 0  , 0  , 0  , 0  , 0  , 0  ],
+                           [0  , 25 , 0  , 0  , 0  , 0  , 0  ],
+                           [0  , 0  , 0.01, 0  , 0  , 0  , 0  ],
+                           [0  , 0  , 0  , 20 , 0  , 0  , 0  ],
                            [0  , 0  , 0  , 0  , 0.1, 0  , 0  ],
                            [0  , 0  , 0  , 0  , 0  , 0.1, 0  ],
                            [0  , 0  , 0  , 0  , 0  , 0  , 0.1  ]])
@@ -75,11 +75,13 @@ class rocketClass:
         self.H[1,2] = 1
         self.H[2,6] = 1
         self.h_var = 10 # variance on altitude measurement
-        self.th_var = 1 # variance on theta measurement
+        self.th_var = 0.1 # variance on theta measurement
         self.R = np.zeros((3,3))
         self.R[0,0] = self.h_var
         self.R[1,1] = self.th_var
         self.R[2,2] = 0.01
+
+        self.cum_error = 0
 
 
 
@@ -333,9 +335,6 @@ class rocketClass:
         self.A[3,5] = term * x2**2 * x3 * -0.5
 
         # generate state transition matrix
-        print("---")
-        print(self.x_hat)
-        print(self.A)
         F = linalg.expm(self.A*dt)
 
         # propagate states and covariance
@@ -373,3 +372,5 @@ class rocketClass:
         # make sure converges
 
         # when filter is working well, relax initial guesses
+
+        self.cum_error = self.cum_error + (self.x_hat[1,0] - self.x_tru[1,0])**2

@@ -279,6 +279,7 @@ class livePlotter:
                 print("simulation finished")
                 print("rocket altitude:", rocket.h, "m")
                 print("simulation time:", sim_time, "s")
+                print(rocket.cum_error)
                 #print("real time: ", current_time - self.time0, " s")
                 while 1:
                     self.app.processEvents() #pg.QtGui.QApplication.processEvents()
