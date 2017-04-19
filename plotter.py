@@ -232,31 +232,43 @@ class livePlotter:
             x = rocket.t_all[0:rocket.i]
             y = rocket.x_tru_all[0,0:rocket.i]
             self.state01_t.setData(x,y)
+            y = rocket.x_hat_all[0,0:rocket.i]
+            self.state01_e.setData(x,y)
 
             # get h_dot truth and estimate for the rocket
             #x = rocket.t_all[0:rocket.i]
             y = rocket.x_tru_all[1,0:rocket.i]
             self.state02_t.setData(x,y)
+            y = rocket.x_hat_all[1,0:rocket.i]
+            self.state02_e.setData(x,y)
 
             # get theta truth and estimate for the rocket
             #x = rocket.t_all[0:rocket.i]
             y = rocket.x_tru_all[2,0:rocket.i]
             self.state03_t.setData(x,y)
+            y = rocket.x_hat_all[2,0:rocket.i]
+            self.state03_e.setData(x,y)
 
             # get theta dot truth and estimate for the rocket
             #x = rocket.t_all[0:rocket.i]
             y = rocket.x_tru_all[3,0:rocket.i]
             self.state04_t.setData(x,y)
+            y = rocket.x_hat_all[3,0:rocket.i]
+            self.state04_e.setData(x,y)
 
             # get theta dot truth and estimate for the rocket
             #x = rocket.t_all[0:rocket.i]
             y = rocket.x_tru_all[4,0:rocket.i]
             self.state05_t.setData(x,y)
+            y = rocket.x_hat_all[4,0:rocket.i]
+            self.state05_e.setData(x,y)
 
             # get theta dot truth and estimate for the rocket
             #x = rocket.t_all[0:rocket.i]
             y = rocket.x_tru_all[5,0:rocket.i]
             self.state06_t.setData(x,y)
+            y = rocket.x_hat_all[5,0:rocket.i]
+            self.state06_e.setData(x,y)
 
 
             # update the plotted data

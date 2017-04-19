@@ -100,6 +100,7 @@ class rocketClass:
         self.th_cmd_all[0]  = self.th_cmd
         self.t_all[0]       = 0
         self.x_tru_all[:,0] = self.x_tru.ravel()
+        self.x_hat_all[:,0] = self.x_hat.ravel()
 
         # index for next iteration
         self.i              = 1
@@ -151,7 +152,7 @@ class rocketClass:
         self.x_tru[2,0] = self.th  # theta truth
         self.x_tru[3,0] = self.thd # theta change truth
         self.x_tru[4,0] = self.CD_b*self.A_ref
-        self.x_tru[5,0] = self.CD_s
+        self.x_tru[5,0] = self.CD_s*self.A_ref
         self.x_tru[6,0] = self.g
 
         # estimate states
