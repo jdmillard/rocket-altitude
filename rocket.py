@@ -26,7 +26,7 @@ class rocketClass:
 
         self.CD_b   = 2.1       # unitless  (drag base coefficient)             REFINE 0.6 questionably from openrocket
         self.CD_s   = 0.21      # unitless  (drag slope CD/angle rate)          FIX FIX FIX (arbitrarily GUESSED and assumes linear relationship, needs complete overhaul)
-        self.A      = 0.0192    # m^2       (reference area, cross section)
+        self.A_ref  = 0.0192    # m^2       (reference area, cross section)
         self.th_max = 60        # deg       (maximum air brake angle = 90deg)   COULD EVENTUALLY CHANGE
         self.th_r   = 45        # deg/s     (air brake rate of change)          0 to 90deg in 2 seconds
 
@@ -47,12 +47,17 @@ class rocketClass:
         self.x_tru[1,0] = self.hd  # altitude change truth
         self.x_tru[2,0] = self.th  # theta truth
         self.x_tru[3,0] = self.thd # theta change truth
-        self.x_tru[4,0] = self.CD_b*self.A
+        self.x_tru[4,0] = self.CD_b*self.A_ref
         self.x_tru[5,0] = self.CD_s
         self.x_tru[6,0] = self.g
 
-        # initialize the covariance matrix, P
-        self.P = np.zeros((7,7))
+        # initialize the filter matrices
+        self.P = np.zeros((7,7)) # covariance matrix, P
+        self.A = np.zeros((7,7)) # homgeneous system
+        self.A[0,1] = 1     # remaining terms are dynamic
+        self.A[1,6] = -1    # remaining terms are dynamic
+        self.A[2,3] = 1     # remaining terms are dynamic
+
 
         # initialize history vectors for plotting
         self.h_all      = np.empty(times.size+1)    # history of h
@@ -104,10 +109,10 @@ class rocketClass:
         ratio   = (self.T_0 - self.alpha*h_diff)/self.T_0
         rho     = self.rho_0 * ratio**(self.n-1)
 
-        drag    = 0.5*rho*(self.hd**2)*CD*self.A
+        drag    = 0.5*rho*(self.hd**2)*CD*self.A_ref
         hdd     = -self.g - (drag/self.m)*np.sign(self.hd)
 
-        thdd    = self.u - 0.5*rho*(self.hd**2)*(self.CD_s * self.th)*self.A
+        thdd    = self.u - 0.5*rho*(self.hd**2)*(self.CD_s * self.th)*self.A_ref
 
         # update the states
         self.h  = self.h  + dt*self.hd
@@ -121,7 +126,7 @@ class rocketClass:
         self.x_tru[1,0] = self.hd  # altitude change truth
         self.x_tru[2,0] = self.th  # theta truth
         self.x_tru[3,0] = self.thd # theta change truth
-        self.x_tru[4,0] = self.CD_b*self.A
+        self.x_tru[4,0] = self.CD_b*self.A_ref
         self.x_tru[5,0] = self.CD_s
         self.x_tru[6,0] = self.g
 
@@ -189,7 +194,7 @@ class rocketClass:
                 rho     = self.rho_0 * ratio**(self.n-1)
 
                 # get drag and deceleration
-                drag    = 0.5*rho*(hd**2)*CD_ref*self.A
+                drag    = 0.5*rho*(hd**2)*CD_ref*self.A_ref
                 hdd     = -self.g - (drag/self.m)*np.sign(hd)
 
                 # update the states with crude foward difference
@@ -277,10 +282,34 @@ class rocketClass:
         # this is the estimation
         # simulate noise on the sensors and
 
+        # extract states for ease of coding
+        x1 = self.x_hat[0,0]
+        x2 = self.x_hat[1,0]
+        x3 = self.x_hat[2,0]
+        x4 = self.x_hat[3,0]
+        x5 = self.x_hat[4,0]
+        x6 = self.x_hat[5,0]
+        x7 = self.x_hat[6,0]
 
-        # propagate state estimates and covariance
         # populate A matrix
-        #A =
+        frac = (self.T_0 - self.alpha*(x1-self.h_0))/self.T_0
+        term = self.rho_0 * frac**(self.n-1)
+
+        front = self.rho_0 * self.alpha * x2**2 / (2 * self.T_0)
+        self.A[1,0] = front * (x5 + x6*x3) * (self.n-1) * frac**(self.n-2)
+        self.A[1,1] = term * x2 * (x5 + x6*x3) * -1
+        self.A[1,2] = term * x2**2 * x6 * -0.5
+        self.A[1,4] = term * x2**2 * -0.5
+        self.A[1,5] = term * x2**2 * x3 * -0.5
+
+        self.A[3,0] = front * x6 * x3 * (self.n-1) * frac**(self.n-2)
+        self.A[3,1] = term * x2 * x6 * x3 * -1
+        self.A[3,2] = term * x2**2 * x6 * -0.5
+        self.A[3,5] = term * x2**2 * x3 * -0.5
+
+
+        # generate state transition matrix
+        #F =
         #x_hat_dot = A*self.x_hat
         #self.x_hat = self.x_hat + x_hat_dot*dt
 
