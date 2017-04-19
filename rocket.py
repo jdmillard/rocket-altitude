@@ -58,6 +58,25 @@ class rocketClass:
         self.A[0,1] = 1     # remaining terms are dynamic
         self.A[1,6] = -1    # remaining terms are dynamic
         self.A[2,3] = 1     # remaining terms are dynamic
+        self.B = np.zeros((7,1))
+        self.B[3,0] = 1
+        self.Q = np.array([[0.1, 0  , 0  , 0  , 0  , 0  , 0  ],
+                           [0  , 0.1, 0  , 0  , 0  , 0  , 0  ],
+                           [0  , 0  , 0.1, 0  , 0  , 0  , 0  ],
+                           [0  , 0  , 0  , 0.1, 0  , 0  , 0  ],
+                           [0  , 0  , 0  , 0  , 0.1, 0  , 0  ],
+                           [0  , 0  , 0  , 0  , 0  , 0.1, 0  ],
+                           [0  , 0  , 0  , 0  , 0  , 0  , 0  ]])
+        self.H = np.zeros((3,7))
+        self.H[0,0] = 1
+        self.H[1,2] = 1
+        self.H[2,6] = 1
+        self.h_var = 10 # variance on altitude measurement
+        self.th_var = 1 # variance on theta measurement
+        self.R = np.zeros((3,3))
+        self.R[0,0] = self.h_var
+        self.R[1,1] = self.th_var
+
 
 
         # initialize history vectors for plotting
@@ -311,33 +330,24 @@ class rocketClass:
         # generate state transition matrix
         F = linalg.expm(self.A*dt)
 
-
-        #x_hat_dot = A*self.x_hat
-        #self.x_hat = self.x_hat + x_hat_dot*dt
-
-        #P =
-        #
+        # propagate states and covariance
+        self.x_hat = np.dot(F, self.x_hat) + self.B*dt*self.u
+        self.P = np.dot(F, np.dot(self.P, np.transpose(F))) + self.Q
 
         # get sensor data with truth + noise
-        y_meas = np.zeros((3,1))
+        z = np.zeros((3,1))
+        z[0,0] = self.h   + np.random.normal(0, np.sqrt(self.h_var))
+        z[1,0] = self.th  + np.random.normal(0, np.sqrt(self.th_var))
+        z[2,0] = self.g
 
-        h_var = 10 # variance on altitude measurement MAKE THESE CLASS MEMBERS FOR THE R MATRIX
-        th_var = 1 # variance on theta measurement
+        # calculate the innovation and innovation covariance
+        y = z - np.dot(self.H, self.x_hat)
+        S = np.dot(self.H, np.dot(self.P, np.transpose(self.H))) + self.R
 
-        y_meas[0,0] = self.h   + np.random.normal(0, np.sqrt(h_var))
-        y_meas[1,0] = self.th  + np.random.normal(0, np.sqrt(th_var))
-        y_meas[2,0] = self.g
-        #print(y_meas)
+        # calculate optimal kalman gain
+        S_inv = np.linalg.inv(S)
+        K = np.dot(self.P, np.dot(np.transpose(self.H),S_inv))
 
-        # innovation term
-        #C =
-        #y_hat = C*x_hat
-
-
-        # generate kalman gain
-
-        # perform update
-
-
-        #print('here')
-        #print(self.x_hat)
+        # update state estimate and covariance
+        self.x_hat = self.x_hat + np.dot(K,y)
+        self.P = np.dot((np.eye(7) - np.dot(K, self.H)), self.P)
