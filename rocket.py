@@ -49,11 +49,14 @@ class rocketClass:
         self.x_tru[2,0] = self.th  # theta truth
         self.x_tru[3,0] = self.thd # theta change truth
         self.x_tru[4,0] = self.CD_b*self.A_ref
-        self.x_tru[5,0] = self.CD_s
+        self.x_tru[5,0] = self.CD_s*self.A_ref
         self.x_tru[6,0] = self.g
 
+        # TEMPORARY - set x_hat to x_tru for debugging
+        self.x_hat = self.x_tru * 1
+
         # initialize the filter matrices
-        self.P = np.zeros((7,7)) # covariance matrix, P
+        self.P = np.ones((7,7)) # covariance matrix, P
         self.A = np.zeros((7,7)) # homgeneous system
         self.A[0,1] = 1     # remaining terms are dynamic
         self.A[1,6] = -1    # remaining terms are dynamic
@@ -66,7 +69,7 @@ class rocketClass:
                            [0  , 0  , 0  , 0.1, 0  , 0  , 0  ],
                            [0  , 0  , 0  , 0  , 0.1, 0  , 0  ],
                            [0  , 0  , 0  , 0  , 0  , 0.1, 0  ],
-                           [0  , 0  , 0  , 0  , 0  , 0  , 0  ]])
+                           [0  , 0  , 0  , 0  , 0  , 0  , 0.1  ]])
         self.H = np.zeros((3,7))
         self.H[0,0] = 1
         self.H[1,2] = 1
@@ -76,6 +79,7 @@ class rocketClass:
         self.R = np.zeros((3,3))
         self.R[0,0] = self.h_var
         self.R[1,1] = self.th_var
+        self.R[2,2] = 0.01
 
 
 
@@ -328,6 +332,9 @@ class rocketClass:
         self.A[3,5] = term * x2**2 * x3 * -0.5
 
         # generate state transition matrix
+        print("---")
+        print(self.x_hat)
+        print(self.A)
         F = linalg.expm(self.A*dt)
 
         # propagate states and covariance
@@ -351,3 +358,8 @@ class rocketClass:
         # update state estimate and covariance
         self.x_hat = self.x_hat + np.dot(K,y)
         self.P = np.dot((np.eye(7) - np.dot(K, self.H)), self.P)
+
+        # TEMPORARY for debugging
+        self.x_hat[4,0] = self.CD_b*self.A_ref
+        self.x_hat[5,0] = self.CD_s*self.A_ref
+        self.x_hat[6,0] = self.g
