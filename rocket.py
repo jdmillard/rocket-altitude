@@ -51,6 +51,9 @@ class rocketClass:
         self.x_tru[5,0] = self.CD_s
         self.x_tru[6,0] = self.g
 
+        # initialize the covariance matrix, P
+        self.P = np.zeros((7,7))
+
         # initialize history vectors for plotting
         self.h_all      = np.empty(times.size+1)    # history of h
         self.hd_all     = np.empty(times.size+1)    # history of h_dot
@@ -104,7 +107,7 @@ class rocketClass:
         drag    = 0.5*rho*(self.hd**2)*CD*self.A
         hdd     = -self.g - (drag/self.m)*np.sign(self.hd)
 
-        thdd    = self.u #- 0.5*rho*(self.hd**2)*(self.CD_s * self.th)*self.A
+        thdd    = self.u - 0.5*rho*(self.hd**2)*(self.CD_s * self.th)*self.A
 
         # update the states
         self.h  = self.h  + dt*self.hd
@@ -254,7 +257,7 @@ class rocketClass:
         error_dot = (error - self.error2_d1)/dt
         self.integrator2 = self.integrator2 + (self.error2_d1 + error)*dt/2
 
-        proportional = error        * 4
+        proportional = error        * 10
         integral = self.integrator  * 0
         derivative = error_dot      * 4
 
