@@ -364,3 +364,12 @@ class rocketClass:
         self.x_hat[4,0] = self.CD_b*self.A_ref
         self.x_hat[5,0] = self.CD_s*self.A_ref
         self.x_hat[6,0] = self.g
+
+        # NOTES --- get non-overwritten states estimating very nicely
+        # get plotting to do a sliding window with automatic y axis scaling
+        # watch it live
+
+        # when things converge very nicely, unlock one of these at a time
+        # make sure converges
+
+        # when filter is working well, relax initial guesses
