@@ -41,6 +41,7 @@ plotter = livePlotter(rocket, final_time=final_time, plot_real_time=False)
 for t in times:
 
     rocket.setControl(dt)
+    rocket.setControl2(dt)
     rocket.propagateStates(dt)
     plotter.updateItems(rocket, t, time.time())
     # need to implement adaptive plotting framerate

@@ -101,25 +101,25 @@ class livePlotter:
         # SECOND WINDOW
 
         # FIRST SUBPLOT OBJECT
-        self.p1 = self.win1.addPlot(title="h")
-        #self.p1.setXRange(0,final_time,padding=0)
-        #self.p1.setYRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
-        self.p1.setLabel('left', "Altitude (m)")
-        self.p1.setLabel('bottom', "Time (s)") # , units='s'
-        self.p1.showGrid(x=True, y=True)
-        self.state01_t = self.p1.plot(pen=pen_green, name='Truth')
-        self.state01_e = self.p1.plot(pen=pen_blue, name='Estimate')
+        self.q1 = self.win1.addPlot(title="h")
+        #self.q1.setXRange(0,final_time,padding=0)
+        #self.q1.setYRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
+        self.q1.setLabel('left', "Altitude (m)")
+        self.q1.setLabel('bottom', "Time (s)") # , units='s'
+        self.q1.showGrid(x=True, y=True)
+        self.state01_t = self.q1.plot(pen=pen_green, name='Truth')
+        self.state01_e = self.q1.plot(pen=pen_blue, name='Estimate')
 
         # SECOND SUBPLOT OBJECT
         self.win1.nextRow()
-        self.p1 = self.win1.addPlot(title="h_dot")
-        #self.p1.setXRange(0,final_time,padding=0)
-        #self.p1.setYRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
-        self.p1.setLabel('left', "Altitude Change (m/s)")
-        self.p1.setLabel('bottom', "Time (s)") # , units='s'
-        self.p1.showGrid(x=True, y=True)
-        self.state02_t = self.p1.plot(pen=pen_green, name='Truth')
-        self.state02_e = self.p1.plot(pen=pen_blue, name='Estimate')
+        self.q2 = self.win1.addPlot(title="h_dot")
+        #self.q2.setXRange(0,final_time,padding=0)
+        #self.q2.setYRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
+        self.q2.setLabel('left', "Altitude Change (m/s)")
+        self.q2.setLabel('bottom', "Time (s)") # , units='s'
+        self.q2.showGrid(x=True, y=True)
+        self.state02_t = self.q2.plot(pen=pen_green, name='Truth')
+        self.state02_e = self.q2.plot(pen=pen_blue, name='Estimate')
 
 
 

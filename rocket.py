@@ -33,8 +33,10 @@ class rocketClass:
         # initialize current states and inputs
         self.h      = self.h_0 + self.h_b
         self.hd     = self.hd_0
-        self.th     = 0
+        self.th     = 0 # theta dot
+        self.thd    = 0 # theta dot
         self.th_cmd = 0
+        self.u      = 0
 
         # initialize state truth and estimate vectors
         self.x_tru  = np.zeros((7,1))
@@ -44,7 +46,7 @@ class rocketClass:
         self.x_tru[0,0] = self.h   # altitude truth
         self.x_tru[1,0] = self.hd  # altitude change truth
         self.x_tru[2,0] = self.th  # theta truth
-        self.x_tru[3,0] = 0 # FIX WITH THETA DOT
+        self.x_tru[3,0] = self.thd # theta change truth
         self.x_tru[4,0] = self.CD_b*self.A
         self.x_tru[5,0] = self.CD_s
         self.x_tru[6,0] = self.g
@@ -74,6 +76,7 @@ class rocketClass:
         CD_ref = self.CD_b * 1.2                                                # NOTE: in the future we won't know CD_b, this is only a temporary assignment
         self.refTrajectory(CD_ref)
         self.integrator = 0;
+        self.integrator2 = 0;
 
 
     def propagateStates(self, dt):
@@ -90,7 +93,7 @@ class rocketClass:
         # then find the overall drag and the subsequent acceleration
 
         # simulate the transient behavior of the air brake
-        self.airBrake(dt)
+        #self.airBrake(dt)
 
         CD      = self.CD_b + self.CD_s * self.th;
 
@@ -101,15 +104,20 @@ class rocketClass:
         drag    = 0.5*rho*(self.hd**2)*CD*self.A
         hdd     = -self.g - (drag/self.m)*np.sign(self.hd)
 
+        thdd    = self.u #- 0.5*rho*(self.hd**2)*(self.CD_s * self.th)*self.A
+
         # update the states
         self.h  = self.h  + dt*self.hd
         self.hd = self.hd + dt*hdd
+
+        self.th = self.th + dt*self.thd
+        self.thd= self.thd+ dt*thdd
 
         # populate the state truth vector
         self.x_tru[0,0] = self.h   # altitude truth
         self.x_tru[1,0] = self.hd  # altitude change truth
         self.x_tru[2,0] = self.th  # theta truth
-        self.x_tru[3,0] = 0 # FIX WITH THETA DOT
+        self.x_tru[3,0] = self.thd # theta change truth
         self.x_tru[4,0] = self.CD_b*self.A
         self.x_tru[5,0] = self.CD_s
         self.x_tru[6,0] = self.g
@@ -121,6 +129,7 @@ class rocketClass:
         self.h_all[self.i]  = self.h
         self.hd_all[self.i] = self.hd
         self.t_all[self.i]  = self.t_all[self.i-1]+dt
+        self.th_all[self.i] = self.th
         self.x_tru_all[:,self.i] = self.x_tru.ravel()
         self.x_hat_all[:,self.i] = self.x_hat.ravel()
 
@@ -203,6 +212,7 @@ class rocketClass:
         self.hd_cmd     = np.interp(self.h, self.h_ref, self.hd_ref)
         self.e_hd[0]    = self.hd - self.hd_cmd
         self.error_d1   = self.hd - self.hd_cmd
+        self.error2_d1  = self.th - self.th_cmd
 
     def saturateControl(self):
         # prevent the control input from going beyond physical constraints
@@ -235,6 +245,30 @@ class rocketClass:
 
         # remember the control input for plotting
         self.th_cmd_all[self.i] = self.th_cmd
+
+
+    def setControl2(self, dt):
+        # this is the basic controller for dynamic theta
+
+        error = self.th_cmd - self.th
+        error_dot = (error - self.error2_d1)/dt
+        self.integrator2 = self.integrator2 + (self.error2_d1 + error)*dt/2
+
+        proportional = error        * 4
+        integral = self.integrator  * 0
+        derivative = error_dot      * 4
+
+        self.u = proportional + derivative + integral
+        #self.saturateControl()
+
+        # add anti-windup logic
+
+        # remember this iteration's error
+        self.error2_d1 = error
+
+        # remember the control input for plotting
+        #self.th_cmd_all[self.i] = self.th_cmd
+
 
     def estimateStates(self):
         # this is the estimation
