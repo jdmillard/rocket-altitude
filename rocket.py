@@ -7,7 +7,8 @@ class rocketClass:
     This the the rocket class. It contains all the relevant parameters and
     functions to simulate dynamics and observation.
     """
-    def __init__(self, times):
+    def __init__(self, times, hh):
+        self.hh = hh # current error state
         # this is the constructor, it runs once upon class instantiation
         # "self." means the variable is a member of this class
 
@@ -63,13 +64,13 @@ class rocketClass:
         self.A[2,3] = 1     # remaining terms are dynamic
         self.B = np.zeros((7,1))
         self.B[3,0] = 1
-        self.Q = np.array([[1.1 , 0  , 0  , 0  , 0  , 0  , 0  ],
-                           [0  , 25 , 0  , 0  , 0  , 0  , 0  ],
-                           [0  , 0  , 0.01, 0  , 0  , 0  , 0  ],
-                           [0  , 0  , 0  , 20 , 0  , 0  , 0  ],
-                           [0  , 0  , 0  , 0  , 0.1, 0  , 0  ],
-                           [0  , 0  , 0  , 0  , 0  , 0.1, 0  ],
-                           [0  , 0  , 0  , 0  , 0  , 0  , 0.1  ]])
+        self.Q = np.array([[0.35   , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 , 0.01  ],
+                           [0.001  , 10000 , 0.001 , 0.001 , 0.001 , 0.001 , 0.01  ], # for position 2,2, 1100 was best, but this has better mean
+                           [0.001  , 0.001 , 0.1   , 0.001 , 0.001 , 0.001 , 0.01  ],
+                           [0.001  , 0.001 , 0.001 , 20    , 0.001 , 0.001 , 0.01  ],
+                           [0.001  , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 , 0.01  ],
+                           [0.001  , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 , 0.01  ],
+                           [0.001  , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 , 0.01  ]])
         self.H = np.zeros((3,7))
         self.H[0,0] = 1
         self.H[1,2] = 1
@@ -82,6 +83,8 @@ class rocketClass:
         self.R[2,2] = 0.01
 
         self.cum_error = 0
+        self.hd_lpf = self.hd_0
+        self.alpha_lpf = 0.05
 
 
 
@@ -328,6 +331,8 @@ class rocketClass:
         self.A[1,2] = term * x2**2 * x6 * -0.5
         self.A[1,4] = term * x2**2 * -0.5
         self.A[1,5] = term * x2**2 * x3 * -0.5
+        self.A[1,6] = -1
+
 
         self.A[3,0] = front * x6 * x3 * (self.n-1) * frac**(self.n-2)
         self.A[3,1] = term * x2 * x6 * x3 * -1
@@ -359,7 +364,15 @@ class rocketClass:
         self.x_hat = self.x_hat + np.dot(K,y)
         self.P = np.dot((np.eye(7) - np.dot(K, self.H)), self.P)
 
+        # lpf h_dot
+        # newest update of hd estimate acts as a new measurement to lpf
+        self.hd_lpf = self.alpha_lpf*self.x_hat[1,0] + (1-self.alpha_lpf)*self.hd_lpf
+        self.x_hat[1,0] = self.hd_lpf
+
         # TEMPORARY for debugging
+        #self.x_hat[1,0] = self.hd
+        self.x_hat[2,0] = self.th
+        self.x_hat[3,0] = self.thd
         self.x_hat[4,0] = self.CD_b*self.A_ref
         self.x_hat[5,0] = self.CD_s*self.A_ref
         self.x_hat[6,0] = self.g
@@ -373,4 +386,10 @@ class rocketClass:
 
         # when filter is working well, relax initial guesses
 
-        self.cum_error = self.cum_error + (self.x_hat[1,0] - self.x_tru[1,0])**2
+        self.cum_error = self.cum_error + (self.x_hat[self.hh,0] - self.x_tru[self.hh,0])**2 #\
+                                        #+ (self.x_hat[1,0] - self.x_tru[1,0])**2 \
+                                        #+ (self.x_hat[2,0] - self.x_tru[2,0])**2 \
+                                        #+ (self.x_hat[3,0] - self.x_tru[3,0])**2 \
+                                        #+ (self.x_hat[4,0] - self.x_tru[4,0])**2 \
+                                        #+ (self.x_hat[5,0] - self.x_tru[5,0])**2 \
+                                        #+ (self.x_hat[6,0] - self.x_tru[6,0])**2
