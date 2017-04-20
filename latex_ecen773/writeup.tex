@@ -4,6 +4,7 @@
 \usepackage{amsmath}  % for custom math
 \usepackage{graphicx} % for figures
 \usepackage{parskip}  % better loooking paragraphs
+\usepackage{hyperref} % for internet links
 
 \title{Rocket Altitude Trajectory Control}
 \date{\today}
@@ -18,11 +19,39 @@
 
 
 \section{Introduction}
-  Summary of AIAA club problem. Open competition.
+  I was approached by a member of the undergraduate AIAA club here at BYU who will be participating in a competition that involves sending a rocket to arrive precisely at 10,000 feet. With fins, the current rocket design is quite stable and we expect the rocket to climb perfectly vertical. Since the rules allow anyone to contribute, I've developed a simulation environment that is available publicly on GitHub at this \href{http://www.texample.net/tikz/resources/}{link}. The simulation simulates the rocket trajectory, control, estimation, and provides structure for Monte Carlo analysis.
 
-  Next paragraph. Deeper description of the problem. A quick overview of the approaches being take. Full simulation, number of states with simple approach. MIMO number of states with complicated appraoch. Sim, observability, EKF, MonteCarlo.
+  While many aspects of the simulation apply to linear system theory, my final project for ECEN 773 concerns itself with the overall approach to altitude trajectory control and more specifically, the Kalman Filter design and results. The KF estimates numerous states including the drag coefficient. This allows for accurate reference trajectory updates online, which yeilds increased robustness in the face of uncertain drag parameters.
 
-\section{Need Name}
+\section{The Rocket}
+  The problem is framed as follows. The simulation (including estimation and control) takes place immediately following the solid propellant burn. So our system can then be thought of as having an initial altitude ($h_0$) and velocity ($\dot{h}_0$). Since the rocket is traveling vertically without wind, $\dot{h}$ is considered the same as the airspeed. The equations of motion describing the system are
+  \begin{equation}
+    \ddot{h} = -g -D
+  \end{equation}
+  where $g$ is gravity and
+  \begin{equation}
+    D = \frac{1}{2} \rho \dot{h}^2 \bar{CD}
+  \end{equation}
+  $\bar{CD}$ is simply the convention chosen to represent a given drag coefficient already multiplied by a reference area so that it doesn't need to be chosen for the current rocket. This means that $\bar{CD}$ is not unitless, but the math is equivalent so long as we are consistent. This overall drag parameter can be represented as the base drag parameter plus the increase due to the air brake angle, $\theta$, as shown here
+  \begin{equation}
+    \bar{CD} = \bar{CD}_0 + \frac{\delta\bar{CD}}{\delta\theta} \theta
+  \end{equation}
+
+  Since $\rho$ depends on our states, we can express it using $h$ and other constants
+  \begin{equation}
+    \rho = \rho_0 \left(   \frac{T_0 - \alpha\left( h-h_0 \right)}{T_0}   \right)^{n-1}
+  \end{equation}
+  where $\rho_0$, $T_0$, $\alpha$, and $n$ are the initial air density, initial air temperature, atmospheric temperature change, and gas constant, respectively.
+
+  This results in the final equation
+  \begin{equation}
+    \ddot{h} = -g -\frac{1}{2} \left[\rho_0 \left(   \frac{T_0 - \alpha\left( h-h_0 \right)}{T_0}   \right)^{n-1}\right] \dot{h}^2 \left(\bar{CD}_0 + \frac{\delta\bar{CD}}{\delta\theta} \theta \right)
+  \end{equation}
+
+  
+
+
+
   First section here
 
   Some notes:

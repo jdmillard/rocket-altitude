@@ -26,7 +26,7 @@ of each simulation piece.
 The simulation starts immediately after burn has finished.
 '''
 
-if (False):
+if (True):
     # set dt, start, end, and create array of all times
     dt = 0.01
     start_time = 0
