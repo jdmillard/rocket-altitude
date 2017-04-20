@@ -55,6 +55,7 @@ class rocketClass:
 
         # TEMPORARY - set x_hat to x_tru for debugging
         self.x_hat = self.x_tru * 1
+        self.x_hat[4,0] = self.x_hat[4,0] * 0.5
 
         # initialize the filter matrices
         self.P = np.ones((7,7)) # covariance matrix, P

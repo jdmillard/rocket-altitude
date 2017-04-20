@@ -147,23 +147,23 @@ class livePlotter:
         self.win1.nextRow()
         self.q5 = self.win1.addPlot(title="CD_0*A")
         #self.q5.setXRange(0,final_time,padding=0)
-        #self.q5.setYRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
+        self.q5.setYRange(0,rocket.CD_b*rocket.A_ref * 1.2,padding=0)
         self.q5.setLabel('left', "Base Drag")
         self.q5.setLabel('bottom', "Time (s)") # , units='s'
         self.q5.showGrid(x=True, y=True)
         self.state05_t = self.q5.plot(pen=pen_green, name='Truth')
         self.state05_e = self.q5.plot(pen=pen_blue, name='Estimate')
 
-        # SIXTH SUBPLOT OBJECT
-        #self.win1.nextRow()
-        self.q6 = self.win1.addPlot(title="CD_0*A change")
-        #self.q6.setXRange(0,final_time,padding=0)
-        #self.q6.setYRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
-        self.q6.setLabel('left', "Drag Rate")
-        self.q6.setLabel('bottom', "Time (s)") # , units='s'
-        self.q6.showGrid(x=True, y=True)
-        self.state06_t = self.q6.plot(pen=pen_green, name='Truth')
-        self.state06_e = self.q6.plot(pen=pen_blue, name='Estimate')
+        ## SIXTH SUBPLOT OBJECT
+        ##self.win1.nextRow()
+        #self.q6 = self.win1.addPlot(title="CD_0*A change")
+        ##self.q6.setXRange(0,final_time,padding=0)
+        ##self.q6.setYRange(rocket.h*0.9,rocket.h_f*1.1,padding=0)
+        #self.q6.setLabel('left', "Drag Rate")
+        #self.q6.setLabel('bottom', "Time (s)") # , units='s'
+        #self.q6.showGrid(x=True, y=True)
+        #self.state06_t = self.q6.plot(pen=pen_green, name='Truth')
+        #self.state06_e = self.q6.plot(pen=pen_blue, name='Estimate')
 
         # show the plot by calling an update
         # it is needed twice (to force display on first iteration) - not sure why
@@ -263,12 +263,12 @@ class livePlotter:
             y = rocket.x_hat_all[4,0:rocket.i]
             self.state05_e.setData(x,y)
 
-            # get theta dot truth and estimate for the rocket
-            #x = rocket.t_all[0:rocket.i]
-            y = rocket.x_tru_all[5,0:rocket.i]
-            self.state06_t.setData(x,y)
-            y = rocket.x_hat_all[5,0:rocket.i]
-            self.state06_e.setData(x,y)
+            ## get theta dot truth and estimate for the rocket
+            ##x = rocket.t_all[0:rocket.i]
+            #y = rocket.x_tru_all[5,0:rocket.i]
+            #self.state06_t.setData(x,y)
+            #y = rocket.x_hat_all[5,0:rocket.i]
+            #self.state06_e.setData(x,y)
 
 
             # update the plotted data
