@@ -36,8 +36,7 @@
   \begin{equation}
     \bar{CD} = \bar{CD}_0 + \frac{\delta\bar{CD}}{\delta\theta} \theta
   \end{equation}
-
-  Since $\rho$ depends on our states, we can express it using $h$ and other constants
+  where $\frac{\delta\bar{CD}}{\delta\theta}$ is considered a constant parameter. Since $\rho$ depends on our states, we can express it using $h$ and other constants
   \begin{equation}
     \rho = \rho_0 \left(   \frac{T_0 - \alpha\left( h-h_0 \right)}{T_0}   \right)^{n-1}
   \end{equation}
@@ -50,8 +49,25 @@
 
   The airbrake dynamics are governed by
   \begin{equation}
-    \ddot{h} = -g -D
+    \ddot{\theta} = \frac{\tau}{J} - \frac{\ell}{2}D_\theta \sin \theta
   \end{equation}
+  where $\tau$ is the motor torque (input), $J$ is the angular inertia, $\ell$ is the airbrake surface length, and $D_\theta \sin \theta$ is simply the added drag due to airbrake deployment tending to push the brake back to $\theta=0$. This assumes that the center of pressure for the added airbrake drag is applied to the center of the surface, hence $\frac{\ell}{2}$ used as the moment arm for resistance torque. It is also worth noting that
+  \begin{equation}
+    D_\theta = \frac{1}{2} \rho \dot{h}^2 \left(\frac{\delta\bar{CD}}{\delta\theta} \theta \right)
+  \end{equation}
+  Using the same state-dependent expression for $\rho$, the full equation for airbrake dynamics is
+  \begin{equation}
+    \ddot{\theta} = \frac{\tau}{J} - \frac{\ell}{4} \left[ \rho_0 \left(   \frac{T_0 - \alpha\left( h-h_0 \right)}{T_0}   \right)^{n-1} \right] \dot{h}^2 \left(\frac{\delta\bar{CD}}{\delta\theta} \theta \right) \sin \theta
+  \end{equation}
+
+  This lays the groundwork for simulation and control. In the following sections, I discuss the control and estimation approaches used.
+
+\section{The Trajectory Approach}
+  Consider a dragless object in a gravity field. Regardless of whether or not the object is falling or climbing, the map of $\dot{h}$ vs $h$ is well-defined based on gravity. Such is not the case for an object with drag. The falling and climbing trajectories of $\dot{h}$ vs $h$ will be different. The approach used here is to generate a reference trajectory of the climbing rocket using a pessimistic drag such that it reaches the desired altitude with zero remaining velocity. Since the integral cannot be easily solved in closed form, an interative numerical approach is used to find the necessary starting velocity $h_0$ as well as the entire subsequent trajectory of $\dot{h}$ vs $h$. The idea is to control the velocity, $\dot{h}$, such that the rocket's motion converges on this trajectory without any overshoot (since we have no method of adding additional needed energy to the system). This can be done by using the reference trajectory as a look-up-table to find the desired $\dot{h}$ for any current $h$.
+
+  The initial control approach was to use PID with successive loop closure and truth states in order to prove the concept of trajectory control. This could be improved upon using feedback linearization with the $\theta$ dynamics.
+
+  The main problem to be addressed by this project is the observability and estimation of the base drag coefficient. In order to grasp the motivation, consider the case where 
 
 
 
