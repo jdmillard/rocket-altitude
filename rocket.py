@@ -64,13 +64,13 @@ class rocketClass:
         self.A[2,3] = 1     # remaining terms are dynamic
         self.B = np.zeros((7,1))
         self.B[3,0] = 1
-        self.Q = np.array([[0.35   , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 , 0.01  ],
-                           [0.001  , 10000 , 0.001 , 0.001 , 0.001 , 0.001 , 0.01  ], # for position 2,2, 1100 was best, but this has better mean
-                           [0.001  , 0.001 , 0.1   , 0.001 , 0.001 , 0.001 , 0.01  ],
-                           [0.001  , 0.001 , 0.001 , 20    , 0.001 , 0.001 , 0.01  ],
-                           [0.001  , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 , 0.01  ],
-                           [0.001  , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 , 0.01  ],
-                           [0.001  , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 , 0.01  ]])
+        self.Q = np.array([[0.4659 , 0.001 , 0.001 , 0.001 , 0.004 , 0.001 , 0.001 ],
+              [0.001  , 15863 , 0.001 , 0.001 , 0.000125 , 0.001 , 0.001 ],
+              [0.001  , 0.001 , 0.00036, 0.001, 0.016 , 0.001 , 0.001 ],
+              [0.001  , 0.001 , 0.001 , 0.21  , 0.0005 , 0.001 , 0.001 ],
+              [0.004  , 0.000125 , 0.016 , 0.0005 , 0.00336, 0.001 , 0.001 ],
+              [0.001  , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 ],
+              [0.001  , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 ]])
         self.H = np.zeros((3,7))
         self.H[0,0] = 1
         self.H[1,2] = 1
@@ -83,8 +83,12 @@ class rocketClass:
         self.R[2,2] = 0.01
 
         self.cum_error = 0
-        self.hd_lpf = self.hd_0
-        self.alpha_lpf = 0.05
+        self.hd_lpf = self.hd_0 # SET TO THE MEAN, OR RANDOMLY SAMPLE IT
+        self.alpha_lpf_1 = 0.05
+        self.thd_lpf = 0
+        self.alpha_lpf_2 = 0.6
+        self.CD_bar_lpf = self.CD_b*self.A_ref # SET TO THE MEAN, OR RANDOMLY SAMPLE IT
+        self.alpha_lpf_3 = 0.01
 
 
 
@@ -364,16 +368,23 @@ class rocketClass:
         self.x_hat = self.x_hat + np.dot(K,y)
         self.P = np.dot((np.eye(7) - np.dot(K, self.H)), self.P)
 
-        # lpf h_dot
+        # lpf
         # newest update of hd estimate acts as a new measurement to lpf
-        self.hd_lpf = self.alpha_lpf*self.x_hat[1,0] + (1-self.alpha_lpf)*self.hd_lpf
+        self.hd_lpf = self.alpha_lpf_1*self.x_hat[1,0] + (1-self.alpha_lpf_1)*self.hd_lpf
         self.x_hat[1,0] = self.hd_lpf
+
+        self.thd_lpf = self.alpha_lpf_2*self.x_hat[3,0] + (1-self.alpha_lpf_2)*self.thd_lpf
+        self.x_hat[3,0] = self.thd_lpf
+
+        # boundary check here on current estimate? wait to see if needed
+        self.CD_bar_lpf = self.alpha_lpf_3*self.x_hat[4,0] + (1-self.alpha_lpf_3)*self.CD_bar_lpf
+        self.x_hat[4,0] = self.CD_bar_lpf
 
         # TEMPORARY for debugging
         #self.x_hat[1,0] = self.hd
-        self.x_hat[2,0] = self.th
-        self.x_hat[3,0] = self.thd
-        self.x_hat[4,0] = self.CD_b*self.A_ref
+        #self.x_hat[2,0] = self.th
+        #self.x_hat[3,0] = self.thd
+        #self.x_hat[4,0] = self.CD_b*self.A_ref
         self.x_hat[5,0] = self.CD_s*self.A_ref
         self.x_hat[6,0] = self.g
 
