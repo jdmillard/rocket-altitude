@@ -106,6 +106,7 @@ scale = 1.05
 # need logic for CD convergence since it becomes unobservable at low speeds
 # perhaps bounds on the estimation as well to prevent filter breakage
 # wait until after subsonic speeds are reached, capture before speed drops too near-unobservable levels, lpf
+# try catch on F = linalg.expm(self.A*dt)
 
 '''
 # latest overnight run, not looked at yet:
