@@ -376,7 +376,8 @@ class rocketClass:
         self.thd_lpf = self.alpha_lpf_2*self.x_hat[3,0] + (1-self.alpha_lpf_2)*self.thd_lpf
         self.x_hat[3,0] = self.thd_lpf
 
-        # boundary check here on current estimate? wait to see if needed
+        self.x_hat[4,0] = max(self.x_hat[4,0], 0.5*self.CD_b*self.A_ref)
+        self.x_hat[4,0] = min(self.x_hat[4,0], 1.5*self.CD_b*self.A_ref)
         self.CD_bar_lpf = self.alpha_lpf_3*self.x_hat[4,0] + (1-self.alpha_lpf_3)*self.CD_bar_lpf
         self.x_hat[4,0] = self.CD_bar_lpf
 

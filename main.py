@@ -26,7 +26,7 @@ of each simulation piece.
 The simulation starts immediately after burn has finished.
 '''
 
-if (True):
+if (False):
     # set dt, start, end, and create array of all times
     dt = 0.01
     start_time = 0
@@ -89,7 +89,7 @@ Q = np.array([[0.4659 , 0.001 , 0.001 , 0.001 , 0.004 , 0.001 , 0.001 ],
               [0.001  , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 ],
               [0.001  , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 , 0.001 ]])
 
-scale = 2
+scale = 1.05
 
 
 # currently trying to converge on the CD_bar with all cross terms
@@ -107,12 +107,20 @@ scale = 2
 # perhaps bounds on the estimation as well to prevent filter breakage
 # wait until after subsonic speeds are reached, capture before speed drops too near-unobservable levels, lpf
 
-batches = 30
+'''
+# latest overnight run, not looked at yet:
+[[  4.65900000e-01   1.00000000e-03   1.00000000e-03   1.00000000e-03    4.20000000e-03]
+ [  1.00000000e-03   1.58630000e+04   1.00000000e-03   1.00000000e-03    1.44703125e-04]
+ [  1.00000000e-03   1.00000000e-03   3.60000000e-04   1.00000000e-03    1.45124717e-02]
+ [  1.00000000e-03   1.00000000e-03   1.00000000e-03   2.10000000e-01    5.78812500e-04]
+ [  4.20000000e-03   1.44703125e-04   1.45124717e-02   5.78812500e-04    4.08410100e-03]]
+'''
+batches = 50
 iii = 0
 while iii < batches:
     iii = iii + 1
-    if (iii>15):
-        scale = 1.1
+    if (iii>20):
+        scale = 1.01
     h_list = np.arange(4,5) # states to consider
     for h in h_list:
         print('-------')
